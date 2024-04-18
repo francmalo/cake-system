@@ -94,6 +94,101 @@ Version: 1.0.0
 	font-size: 100%;
 }
 
+
+
+
+/*** 
+
+====================================================================
+	Mine Added
+====================================================================
+
+ ***/
+
+/*index.html*/
+  .portfolio-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+  
+
+  
+  h2.underline-category {
+	position: relative;
+	display: inline-block;
+	padding-bottom: 5px;
+  }
+  
+  .scroll-button i {
+    font-size: 18px; /* Adjust icon size as needed */
+}
+.category-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 40px;
+	
+}
+.category-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 20px;
+  }
+
+  .navigation-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .prev-button,
+  .next-button {
+    background-color: #68CDCA;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 10px;
+    flex-basis: 45%;
+	width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add box-shadow */
+  }
+  .prev-button:hover,
+  .next-button:hover {
+    background-color: #FF91A4;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Increase box-shadow on hover */
+  }
+
+  .shop-items-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .shop-items-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  .shop-item {
+	flex: 0 0 auto;
+	width: calc(100% / 6); /* Display six items at once */
+	/* Add any additional styling for shop items */
+}
+
+
+
+
 /*** 
 
 ====================================================================
