@@ -1,3 +1,93 @@
+
+
+
+<?php
+// Define product categories and products
+$categories = array(
+    'wedding' => 'Wedding',
+    'birthday' => 'Birthday',
+    // Add more categories as needed
+);
+
+// Set the initial category based on the URL parameter or default to 'all'
+$currentCategory = isset($_GET['category']) ? $_GET['category'] : 'all';
+$products = array(
+    array(
+        'name' => 'Authentic Macaroons',
+        'category' => 'wedding',
+        'price' => 25.00,
+        'image' => 'images/products/pic1.jpg'
+    ),
+    array(
+        'name' => 'Birthday Cake',
+        'category' => 'birthday',
+        'price' => 30.00,
+        'image' => 'images/products/pic2.jpg'
+    ),
+    // Add more products as needed
+    array(
+        'name' => 'Authentic Macaroons',
+        'category' => 'wedding',
+        'price' => 25.00,
+        'image' => 'images/products/pic1.jpg'
+    ),
+    array(
+        'name' => 'Birthday Cake',
+        'category' => 'birthday',
+        'price' => 30.00,
+        'image' => 'images/products/pic2.jpg'
+    ),
+    // Add more products as needed
+    array(
+        'name' => 'Authentic Macaroons',
+        'category' => 'wedding',
+        'price' => 25.00,
+        'image' => 'images/products/pic1.jpg'
+    ),
+    array(
+        'name' => 'Birthday Cake',
+        'category' => 'birthday',
+        'price' => 30.00,
+        'image' => 'images/products/pic2.jpg'
+    ),
+    // Add more products as needed
+);
+
+// Function to display products based on category
+function displayProducts($category, $products) {
+    $html = '';
+    foreach ($products as $product) {
+        if (strtolower($category) === 'all' || strtolower($product['category']) === strtolower($category)) {
+            $html .= '
+                <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="' . $product['category'] . '">
+                    <div class="inner-box">
+                        <div class="image-box">
+                            <figure class="image"><a href="shop-single.html"><img src="' . $product['image'] . '" alt=""></a></figure>
+                            <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
+                        </div>
+                        <div class="lower-content">
+                            <h4 class="name"><a href="shop-single.html">' . $product['name'] . '</a></h4>
+                            <div class="rating">
+                                <span class="fa fa-star"></span>
+                                <span class="fa fa-star"></span>
+                                <span class="fa fa-star"></span>
+                                <span class="fa fa-star"></span>
+                                <span class="fa fa-star light"></span>
+                            </div>
+                            <div class="price">$' . $product['price'] . '</div>
+                        </div>
+                    </div>
+                </div>
+            ';
+        }
+    }
+    return $html;
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -232,122 +322,47 @@
     </section>
     <!--End Page Title-->
 
-    <!--Sidebar Page Container-->
-    <div class="sidebar-page-container">
-        <div class="auto-container">
-            <div class="row clearfix">
 
-                <!--Content Side-->
-                <div class="content-side col-lg-9 col-md-12 col-sm-12">
-                    <div class="our-shop">
-                        <div class="shop-upper-box clearfix">
-                            <div class="items-label">Showing all 12 results</div>
+    <section class="portfolio-section">
+        <div class="auto-container">
+          <div class="sec-title text-center">
+            <div class="divider"><img src="images/icons/divider_1.png" alt=""></div>
+            <h2>Our Creations</h2>
+          </div>
+                   <div class="shop-upper-box clearfix">
+                 
+                       
                             <div class="orderby">
-                                <select name="orderby" class="sortby-select select2-offscreen">
-                                    <option value="popularity">Sort by popularity</option>
-                                    <option value="rating" >Sort by average rating</option>
-                                    <option value="date" >Sort by newness</option>
-                                    <option value="price" >Sort by price: low to high</option>
-                                    <option value="price-desc" >Sort by price: high to low</option>
+                                <!-- <h2>Filter Categories</h2> -->
+                               <select name="orderby" class="sortby-select select2-offscreen" onchange="filterProducts(this.value)">
+                                    <option value="all" <?php echo ($currentCategory === 'all') ? 'selected' : ''; ?>>All Categories</option>
+                                    <?php foreach ($categories as $key => $value): ?>
+                                        <option value="<?php echo $key; ?>" <?php echo ($currentCategory === $key) ? 'selected' : ''; ?>><?php echo $value; ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="row clearfix">
-                            
-                            <!-- Shop Item --> 
-                            <div class="shop-item col-lg-4 col-md-6 col-sm-12">
-                                <div class="inner-box">
-                                    <div class="image-box">
-                                        <div class="sale-tag">sale!</div>
-                                        <figure class="image"><a href="shop-single.html"><img src="images/products/pic1.jpg" alt=""></a></figure>
-                                        <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
-                                    </div>
-                                    <div class="lower-content">
-                                        <h4 class="name"><a href="shop-single.html">Authentic Macaroons</a></h4>
-                                        <div class="rating"><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star"></span><span class="fa fa-star light"></span></div>
-                                        <div class="price"><del>$29.00</del> $25.00</div>
-                                    </div>
-                                </div>
-                            </div>
-
-    
-
-                            
-                        </div>
-                    </div>
-                </div>
-                
-                <!--Sidebar Side-->
-                <div class="sidebar-side sticky-container col-lg-3 col-md-12 col-sm-12">
-                    <aside class="sidebar theiaStickySidebar">
-                        <div class="sticky-sidebar">
-                            <!-- Search Widget -->
-                            <div class="sidebar-widget search-widget">
+                            <div class="search-widget">
                                 <form method="post" action="contact.html">
                                     <div class="form-group">
-                                        <input type="search" name="search-field" value="" placeholder="Search products…" required>
+                                        <input type="search" class="search-product" name="search-field" value="" placeholder="Search products…" required>
                                         <button type="submit"><span class="icon fa fa-search"></span></button>
                                     </div>
                                 </form>
                             </div>
-                            
-                            <!-- Cart Widget -->
-                            <div class="sidebar-widget cart-widget">
-                                <div class="widget-content">
-                                  <h3 class="widget-title">Categories</h3>
-                                  <ul class="category-list">
-                                    <li><a href="#">Wedding</a></li>
-                                    <li><a href="#">Birthday</a></li>
-                                    <li><a href="#">Annivesery</a></li>
-                                    <li><a href="#">Graduation</a></li>
-                                    <li><a href="#">Other</a></li>
-                                  </ul>
-                                  <div class="shopping-cart"></div>
-                                </div>
-                              </div>
-
-                            <!-- Range Slider Widget -->
-                            <div class="sidebar-widget rangeslider-widget">
-                                <div class="widget-content">
-                                    <h3 class="widget-title">Price Filter</h3>
-                                    
-                                    <div class="range-slider-one clearfix">
-                                        <div class="price-range-slider"></div>
-                                        <div class="clearfix">
-                                            <div class="pull-left input-box">
-                                                <div class="title">Price:</div>
-                                                <div class="input"><input type="text" class="property-amount" name="field-name" readonly></div>
-                                            </div>
-                                            <div class="pull-right btn-box">
-                                                <a href="#" class="theme-btn"><span class="btn-title">Filtter</span></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tags Widget -->
-                            <div class="sidebar-widget tags-widget">
-                                <h3 class="widget-title">Tags</h3>
-                                <ul class="tag-list clearfix">
-                                    <li><a href="#">Bars</a></li>
-                                    <li><a href="#">Caramels</a></li>
-                                    <li><a href="#">Chocolate</a></li>
-                                    <li><a href="#">Fruit</a></li>
-                                    <li><a href="#">Nuts</a></li>
-                                    <li><a href="#">Toffees</a></li>
-                                    <li><a href="#">Top Rated</a></li>
-                                    <li><a href="#">Truffles</a></li>
-                                </ul>
-                            </div>
                         </div>
-                    </aside>
-                </div>
-            </div>
+      
+         <div class="category-wrapper">
+ 
+         <div class="shop-items row clearfix">
+                            <?php echo displayProducts('all', $products); ?>
+                        </div>
+</div>
+
         </div>
-    </div>
-    <!--End Sidebar Page Container-->
+      </section>
+    <!--End Projects Sections -->
+
+   
 
     <!-- Main Footer -->
     <footer class="main-footer style-seven">
@@ -483,6 +498,29 @@
     </svg>
     <span class="fa fa-angle-up"></span>
 </div>
+
+
+<script>
+       const shopItems = document.querySelectorAll('.shop-item');
+
+function filterProducts(category) {
+    shopItems.forEach(item => {
+        const itemCategory = item.dataset.category;
+        if (category === 'all' || itemCategory === category) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Call filterProducts with the initial category
+document.addEventListener('DOMContentLoaded', function() {
+    const initialCategory = '<?php echo $currentCategory; ?>';
+    filterProducts(initialCategory);
+});
+    </script>
+
 
 <script src="js/jquery.js"></script> 
 <script src="js/popper.min.js"></script>

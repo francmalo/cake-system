@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bellaria - a Delicious Cakes and Bakery HTML Template | Blog Single 4</title>
+<title>Cake Kitchen - a Delicious Cakes and Bakery | Home Cake</title>
 
 <!-- Stylesheets -->
 <link href="css/bootstrap.css" rel="stylesheet">
+<link href="plugins/revolution/css/settings.css" rel="stylesheet" type="text/css"><!-- REVOLUTION SETTINGS STYLES -->
+<link href="plugins/revolution/css/layers.css" rel="stylesheet" type="text/css"><!-- REVOLUTION LAYERS STYLES -->
+<link href="plugins/revolution/css/navigation.css" rel="stylesheet" type="text/css"><!-- REVOLUTION NAVIGATION STYLES -->
+
 <link href="css/style.css" rel="stylesheet">
 <link href="css/responsive.css" rel="stylesheet">
 
@@ -56,7 +60,7 @@
         <!-- Main box -->
         <div class="main-box">
             <div class="menu-box">
-                <div class="logo"><a href="index.html"><img src="images/logo.png" alt="" title=""></a></div>
+                <div class="logo"><a href="index.html"><img src="images/logo-22.png" alt="" title=""></a></div>
 
                 <!--Nav Box-->
                 <div class="nav-outer clearfix">
@@ -64,71 +68,33 @@
                     <nav class="main-menu navbar-expand-md navbar-light">
                         <div class="collapse navbar-collapse clearfix" id="navbarSupportedContent">
                             <ul class="navigation menu-left clearfix">
-                                <li class="dropdown"><a href="index.html">Home</a>
+                                <li class="current dropdown"><a href="index.html">Home</a>
+                                    
+                                </li>
+                                <li class="dropdown"><a href="#">Category</a>
                                     <ul>
-                                        <li><a href="index.html">Cakes</a></li>
-                                        <li><a href="index-2.html">Lollipop</a></li>
-                                        <li><a href="index-3.html">Wedding</a></li>
-                                        <li><a href="index-4.html">Coffee</a></li>
-                                        <li><a href="index-5.html">Ice-Cream</a></li>
-                                        <li><a href="index-6.html">Macaron</a></li>
-                                        <li><a href="index-7.html">Shop</a></li>
-                                        <li><a href="index-8.html">Landing</a></li>
+                                        <li><a href="#">Wedding</a></li>
+                                        <li><a href="#">Birthday</a></li>
+                                        <li><a href="#">Annivesery</a></li>
+                                        <li><a href="#">Graduation</a></li>
+                                        <li><a href="#">Other</a></li>
                                     </ul>
                                 </li>
-                                <li class="dropdown"><a href="about-us.html">Pages</a>
+                                <li class="dropdown"><a href="#">Links</a>
                                     <ul>
-                                        <li><a href="about-us.html">About Us</a></li>
-                                        <li><a href="our-staff.html">Our Staff</a></li>
-                                        <li><a href="pricing-tables.html">Pricing Tables</a></li>
-                                        <li><a href="content-elements.html">Content Elements</a></li>
-                                        <li><a href="recipes-list.html">Recipes Grid</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown"><a href="portfolio-masonry.html">Portfolio</a>
-                                    <ul>
-                                        <li><a href="portfolio-masonry.html">Masonry</a></li>
-                                        <li><a href="portfolio-masonry-wide.html">Masonry Wide</a></li>
-                                        <li><a href="portfolio-wide.html">Wide</a></li>
-                                        <li><a href="portfolio-with-filter.html">With Filter</a></li>
-                                        <li><a href="portfolio-two-column.html">Two Columns</a></li>
-                                        <li><a href="portfolio-with-sidebar.html">With Sidebar</a></li>
-                                        <li><a href="portfolio-square.html">Square</a></li>
-                                        <li><a href="portfolio-single.html">single Post</a></li>
+                                        <li><a href="#">About Us</a></li>
+                                        <li><a href="#">Our Services</a></li>
+                                        <li><a href="#">FAQs</a></li>
                                     </ul>
                                 </li>
                             </ul>
 
                             <ul class="navigation menu-right clearfix">
-                                <li class="dropdown current"><a href="blog-showcase.html">Blog</a>
-                                    <ul>
-                                        <li><a href="blog-showcase.html">Checkerboard</a></li>
-                                        <li><a href="blog-standard.html">Standard</a></li>
-                                        <li><a href="blog-masonry.html">Masonry</a></li>
-                                        <li><a href="blog-masonry-full-width.html">Masonry Full Width</a></li>
-                                        <li><a href="blog-two-column.html">Two Columns Grid</a></li>
-                                        <li><a href="blog-three-column-wide.html">Three Columns Wide</a></li>
-                                        <li class="dropdown current"><a href="#">Post Types</a>
-                                            <ul>
-                                                <li><a href="blog-single.html">Standard Post</a></li>
-                                                <li><a href="blog-single-2.html">Gallery Post</a></li>
-                                                <li><a href="blog-single-3.html">Video Post</a></li>
-                                                <li class="current"><a href="blog-single-4.html">Audio Post</a></li>
-                                                <li><a href="blog-single-5.html">Quote Post</a></li>
-                                                <li><a href="blog-single-6.html">Link Post</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
+                                <li class=""><a href="#">Booking</a></li>
+                                <li class=""><a href="shop.html">Shop</a>
+                                    
                                 </li>
-                                <li class="dropdown"><a href="shop.html">Shop</a>
-                                    <ul>
-                                        <li><a href="shop.html">Shop</a></li>
-                                        <li><a href="shopping-cart.html">Cart</a></li>
-                                        <li><a href="checkout.html">Checkout</a></li>
-                                        <li><a href="login.html">My account</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="contact.html">Contacts</a></li>
+                                <li><a href="#contact.html">Contacts</a></li>
                             </ul>
                         </div>
                     </nav>
@@ -183,11 +149,8 @@
                     <a href="#" title="Sticky Logo"><img src="images/logo-small.png" alt="Sticky Logo"></a>
                 </div>
 
-                <!--Right Col-->
+                <!--Nav Outer-->
                 <div class="nav-outer">
-                    <!--Mobile Navigation Toggler-->
-                    <div class="mobile-nav-toggler"><span class="icon flaticon-menu"></span></div>
-                    
                     <!-- Main Menu -->
                     <nav class="main-menu">
                         <!--Keep This Empty / Menu will come through Javascript-->
@@ -207,7 +170,7 @@
         </div>
 
         <!-- Mobile Menu  -->
-        <div class="mobile-menu">
+        <div class="mobile-menu">            
             <nav class="menu-box">
                 <div class="nav-logo"><a href="index.html"><img src="images/logo-small.png" alt="" title=""></a></div> 
                 <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
@@ -229,177 +192,40 @@
             </div>
         </div>
         <!-- End Header Search -->
+
     </header>
     <!--End Main Header -->
 
-    <!--Page Title-->
-    <section class="page-title" style="background-image:url(https://via.placeholder.com/1920x400)">
-        <div class="auto-container">
-            <h1>Blog Single 4</h1>
-            <ul class="page-breadcrumb">
-                <li><a href="index.html">home</a></li>
-                <li>Blog Single 4</li>
-            </ul>
+
+    <!-- Call to Action -->
+ 
+    <!--End Call to Action -->
+
+    <!-- Portfolio Sections -->
+    <!-- Portfolio Sections -->
+<section class="portfolio-section">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <div class="divider"><img src="images/icons/divider_1.png" alt=""></div>
+            <h2>Our Creations</h2>
         </div>
-    </section>
-    <!--End Page Title-->
-
-        <!--Sidebar Page Container-->
-    <div class="sidebar-page-container">
-        <div class="auto-container">
-            <div class="row clearfix">
-                <!--Content Side-->
-                <div class="content-side col-lg-9 col-md-12 col-sm-12">
-                    <div class="blog-single">
-                        <!-- News Block -->
-                        <div class="news-block">
-                            <div class="inner-box">
-                                <div class="image-column">
-                                    <div class="inner-column">
-                                        <div class="image">
-                                            <iframe src="https://w.soundcloud.com/player/?visual=true&#038;url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F179601708&#038;show_artwork=true&#038;maxwidth=500&#038;maxheight=750&#038;dnt=1"></iframe>
-                                        </div>
-                                        <div class="date">04 <span>Dec</span></div>
-                                    </div>
-                                </div>
-                                <div class="content-column">
-                                    <div class="inner-column">
-                                        <ul class="post-info">
-                                            <li><span class="icon fa fa-user"></span> by admin</li>
-                                            <li><span class="icon fa fa-heart"></span> 5 Likes</li>
-                                            <li><span class="icon fa fa-bookmark"></span> <a href="#">Cake Pops</a>, <a href="#">Caramels</a>, <a href="#">Toffees</a></li>
-                                        </ul>
-                                        <p>Et enim, magna felis vestibulum, ornare massa elit, in nam dignissim nam morbi odio nullam. Rhoncus vitae ligula, mauris nascetur eleifend nonummy. Mauris mattis suscipit, fermentum sed proin vestibulum in diam interdum. Dignissim lobortis fermentum in dui. Elit neque, tincidunt vestibulum, orci urna et fermentum aliquam volutpat. Id sociosqu elit vitae pellentesque sem, id velit vel ante dui proin hymenaeos. Velit ac neque orci, adipiscing taciti turpis euismod augue diam.</p>
-                                        <blockquote>Quisque volutpat vel sapien id luctus. Donec vestibulum efficitur turpis ullamcorper iaculis.</blockquote>
-                                        <p>Mauris sit amet elit sit amet odio iaculis sodales. Aliquam imperdiet dolor vel purus scelerisque, et condimentum nunc tempus. Nunc laoreet nulla sit amet ante vehicula consectetur. Nam cursus ut augue sed iaculis. Sed auctor dui a massa dictum cursus. Nullam eget enim quis velit efficitur malesuada pellentesque nec lacus. Maecenas sagittis porttitor convallis.</p>
-                                    </div>
-                                </div>
-                                <div class="two-column row">
-                                    <div class="image-column col-lg-6 col-md-12">
-                                        <figure class="image"><img src="https://via.placeholder.com/1920x1080" alt=""></figure>
-                                    </div>
-                                    <div class="content-column col-lg-6 col-md-12">
-                                        <ul class="list-style-one"> 
-                                            <li>Donec ligula leo, ornare at posuere.</li>
-                                            <li>Donec eu sollicitudin quam, vitae.</li>
-                                            <li>Phasellus ac nulla lacinia, sodales.</li>
-                                            <li>Vestibulum tincidunt felis non lectus.</li>
-                                            <li>Cras sem libero, porta vestibulum in.</li>
-                                            <li>Nam accumsan nulla viverra tincidunt.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="devider"><img src="images/icons/icon-devider-gray.png" alt=""></div>
-                            </div>
-                        </div>
-
-                        <!--Comment Form-->
-                        <div class="comment-form">
-                            <div class="group-title">
-                                <h3>Leave a Reply</h3>
-                            </div>
-                            <div class="form-outer">
-                                <p>Your email address will not be published. Required fields are marked *</p>
-                                <form method="post" action="blog-showcase.html"> 
-                                    <div class="row clearfix">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                            <div class="field-label">Comment</div>
-                                            <textarea name="message" placeholder=""></textarea>
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-12 col-sm-12 form-group">
-                                            <div class="field-label">Name *</div>
-                                            <input type="text" name="username" placeholder="" required="">
-                                        </div>
-                                        
-                                        <div class="col-lg-4 col-md-12 col-sm-12 form-group">
-                                            <div class="field-label">Email *</div>
-                                            <input type="email" name="email" placeholder="" required="">
-                                        </div>
-                                        
-                                        <div class="col-lg-4 col-md-12 col-sm-12 form-group">
-                                            <div class="field-label">Website</div>
-                                            <input type="url" name="website" placeholder="" required="">
-                                        </div>
-
-                                        <div class="col-lg-12 col-md-12 col-sm-12 form-group text-right">
-                                            <input type="submit" name="submit" value="Submit">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!--Sidebar Side-->
-                <div class="sidebar-side sticky-container col-lg-3 col-md-12 col-sm-12">
-                    <aside class="sidebar theiaStickySidebar">
-                        <div class="sticky-sidebar">
-                            <!-- Search -->
-                            <div class="sidebar-widget search-widget">
-                                <form method="post" action="contact.html">
-                                    <div class="form-group">
-                                        <input type="search" name="search-field" value="" placeholder="Search…" required>
-                                        <button type="submit"><span class="icon fa fa-search"></span></button>
-                                    </div>
-                                </form>
-                            </div>
-                            
-                            <!-- Gallery Widget -->
-                            <div class="sidebar-widget gallery-widget">
-                                <div class="widget-content">
-                                    <h3 class="widget-title">Gallery</h3>
-                                    <div class="instagram-gallery">
-                                        <div class="outer-box clearfix">
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-
-                                            <figure class="image"><a href="https://via.placeholder.com/500x500" class="lightbox-image" data-fancybox='instagram'><img src="https://via.placeholder.com/150x150" alt=""></a></figure>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Category  Widget -->
-                            <div class="sidebar-widget category-widget">
-                                <div class="widget-content">
-                                    <h3 class="widget-title">Categories</h3>
-                                    <ul class="categories-list">
-                                        <li><a href="#">Cake</a></li>
-                                        <li><a href="#">Coffee Cake</a></li>
-                                        <li><a href="#">Ice Cream</a></li>
-                                        <li><a href="#">Lollipop</a></li>
-                                        <li><a href="#">Macaroons</a></li>
-                                        <li><a href="#">Uncategorized</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            </div>
-        </div>
+        <div id="category-wrappers"></div>
     </div>
-    <!--End Sidebar Page Container-->
+</section>
+<!--End Projects Sections -->
+
+    <!--End Projects Sections -->
+   
+
+
+ 
+
+
 
     <!-- Main Footer -->
     <footer class="main-footer">
         <div class="shape_wrapper shape_one">
-            <div class="shape_inner" style="background-image: url(images/background/35.jpg);"><div class="overlay"></div></div>
+            <div class="shape_inner" style="background-image: url(https://via.placeholder.com/1920x600);"><div class="overlay"></div></div>
         </div>
 
         <!--Widgets Section-->
@@ -479,7 +305,7 @@
         <div class="footer-bottom">
             <div class="auto-container">
                 <div class="copyright-text">
-                    <p>Bellaria - A Delicious Cakes and Bakery WordPress Theme</p>
+                    <p>The Cake Kitchen</p>
                 </div>
             </div>
         </div>
@@ -505,13 +331,140 @@
     <span class="fa fa-angle-up"></span>
 </div>
 
+<script>
+    // Fetch product and category from the server
+    fetch('fetch_products.php')
+        .then(response => response.json())
+        .then(data => {
+            const product = data.product;
+            const category = data.category;
+
+            console.log('Fetched product:', product);
+            console.log('Fetched category:', category);
+
+            // Function to generate HTML for a shop item
+            function generateShopItem(product) {
+                return `
+                    <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
+                        <div class="inner-box">
+                            <div class="image-box">
+                                <div class="sale-tag">sale!</div>
+                                <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
+                                <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
+                            </div>
+                            <div class="lower-content">
+                                <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
+                                
+                                <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Function to handle next button click
+            function nextButtonClick(categoryIndex) {
+                console.log('Next button clicked for category index:', categoryIndex);
+                console.log('Current item indexes:', currentItemIndexes);
+                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+                console.log('Shop items container:', shopItemsContainer);
+                // Ensure shopItemsContainer is not null
+                if (shopItemsContainer) {
+                    currentItemIndexes[categoryIndex] = Math.min(currentItemIndexes[categoryIndex] + 2, product.length - 1); // Increment index by 2
+                    var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+                    var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+                    shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }
+
+            // Function to handle previous button click
+            function prevButtonClick(categoryIndex) {
+                console.log('Previous button clicked for category index:', categoryIndex);
+                console.log('Current item indexes:', currentItemIndexes);
+                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+                console.log('Shop items container:', shopItemsContainer);
+                // Ensure shopItemsContainer is not null
+                if (shopItemsContainer) {
+                    currentItemIndexes[categoryIndex] = Math.max(currentItemIndexes[categoryIndex] - 2, 0); // Decrement index by 2
+                    var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+                    var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+                    shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }
+
+            // Insert category wrappers into the DOM
+            var categoryWrappersContainer = document.getElementById('category-wrappers');
+            category.forEach((category, index) => {
+                var categoryWrapper = document.createElement('div');
+                categoryWrapper.classList.add('category-wrapper');
+                if (index > 1 && index < category.length - 1) {
+                    categoryWrapper.classList.add('reduced-spacing');
+                }
+
+                var categoryHeader = document.createElement('div');
+                categoryHeader.classList.add('category-header');
+                categoryHeader.innerHTML = `
+                    <h2 class="underline-category">${category}</h2>
+                    <div class="navigation-buttons">
+                        <button class="scroll-button prev-button" onclick="prevButtonClick(${index})"><i class="fas fa-chevron-left"></i></button>
+                        <button class="scroll-button next-button" onclick="nextButtonClick(${index})"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                `;
+
+                var shopItemsContainer = document.createElement('div');
+                shopItemsContainer.classList.add('shop-items-container', 'row', 'clearfix');
+
+                categoryWrapper.appendChild(categoryHeader);
+                categoryWrapper.appendChild(shopItemsContainer);
+                categoryWrappersContainer.appendChild(categoryWrapper);
+            });
+
+            // Insert shop items into the DOM
+            var shopItemsContainers = document.querySelectorAll('.shop-items-container');
+            shopItemsContainers.forEach((container, index) => {
+                product.forEach(product => {
+                    if (product.category === category[index]) {
+                        var shopItemHTML = generateShopItem(product);
+                        container.innerHTML += shopItemHTML;
+                    }
+                });
+            });
+
+    // Get the width of the first shop item after the DOM has loaded
+    window.onload = function() {
+      var shopItem = document.querySelector('.shop-item');
+      shopItemWidth = shopItem.offsetWidth;
+      console.log('Shop item width:', shopItemWidth);
+      console.log('Initial current item indexes:', currentItemIndexes);
+    };
+      })
+        .catch(error => console.error('Error fetching product:', error));
+        
+</script>
+
+
+
+
 <script src="js/jquery.js"></script> 
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<!--Revolution Slider-->
+<script src="plugins/revolution/js/jquery.themepunch.revolution.min.js"></script>
+<script src="plugins/revolution/js/jquery.themepunch.tools.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.carousel.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.migration.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.video.min.js"></script>
+<script src="js/main-slider-script.js"></script>
+<!--Revolution Slider-->
 <script src="js/jquery.fancybox.js"></script>
 <script src="js/owl.js"></script>
 <script src="js/wow.js"></script>
-<script src="js/sticky_sidebar.min.js"></script>
 <script src="js/appear.js"></script>
 <script src="js/script.js"></script>
 </body>

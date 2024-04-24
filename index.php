@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bellaria - a Delicious Cakes and Bakery HTML Template | Recipes List</title>
+<title>Cake Kitchen - a Delicious Cakes and Bakery | Home Cake</title>
 
 <!-- Stylesheets -->
 <link href="css/bootstrap.css" rel="stylesheet">
+<link href="plugins/revolution/css/settings.css" rel="stylesheet" type="text/css"><!-- REVOLUTION SETTINGS STYLES -->
+<link href="plugins/revolution/css/layers.css" rel="stylesheet" type="text/css"><!-- REVOLUTION LAYERS STYLES -->
+<link href="plugins/revolution/css/navigation.css" rel="stylesheet" type="text/css"><!-- REVOLUTION NAVIGATION STYLES -->
+
 <link href="css/style.css" rel="stylesheet">
 <link href="css/responsive.css" rel="stylesheet">
 
@@ -56,7 +60,7 @@
         <!-- Main box -->
         <div class="main-box">
             <div class="menu-box">
-                <div class="logo"><a href="index.html"><img src="images/logo.png" alt="" title=""></a></div>
+                <div class="logo"><a href="index.html"><img src="images/logo-22.png" alt="" title=""></a></div>
 
                 <!--Nav Box-->
                 <div class="nav-outer clearfix">
@@ -64,71 +68,33 @@
                     <nav class="main-menu navbar-expand-md navbar-light">
                         <div class="collapse navbar-collapse clearfix" id="navbarSupportedContent">
                             <ul class="navigation menu-left clearfix">
-                                <li class="dropdown"><a href="index.html">Home</a>
+                                <li class="current dropdown"><a href="index.html">Home</a>
+                                    
+                                </li>
+                                <li class="dropdown"><a href="#">Category</a>
                                     <ul>
-                                        <li><a href="index.html">Cakes</a></li>
-                                        <li><a href="index-2.html">Lollipop</a></li>
-                                        <li><a href="index-3.html">Wedding</a></li>
-                                        <li><a href="index-4.html">Coffee</a></li>
-                                        <li><a href="index-5.html">Ice-Cream</a></li>
-                                        <li><a href="index-6.html">Macaron</a></li>
-                                        <li><a href="index-7.html">Shop</a></li>
-                                        <li><a href="index-8.html">Landing</a></li>
+                                        <li><a href="#">Wedding</a></li>
+                                        <li><a href="#">Birthday</a></li>
+                                        <li><a href="#">Annivesery</a></li>
+                                        <li><a href="#">Graduation</a></li>
+                                        <li><a href="#">Other</a></li>
                                     </ul>
                                 </li>
-                                <li class="dropdown current"><a href="about-us.html">Pages</a>
+                                <li class="dropdown"><a href="#">Links</a>
                                     <ul>
-                                        <li><a href="about-us.html">About Us</a></li>
-                                        <li><a href="our-staff.html">Our Staff</a></li>
-                                        <li><a href="pricing-tables.html">Pricing Tables</a></li>
-                                        <li><a href="content-elements.html">Content Elements</a></li>
-                                        <li class="current"><a href="recipes-list.html">Recipes Grid</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown"><a href="portfolio-masonry.html">Portfolio</a>
-                                    <ul>
-                                        <li><a href="portfolio-masonry.html">Masonry</a></li>
-                                        <li><a href="portfolio-masonry-wide.html">Masonry Wide</a></li>
-                                        <li><a href="portfolio-wide.html">Wide</a></li>
-                                        <li><a href="portfolio-with-filter.html">With Filter</a></li>
-                                        <li><a href="portfolio-two-column.html">Two Columns</a></li>
-                                        <li><a href="portfolio-with-sidebar.html">With Sidebar</a></li>
-                                        <li><a href="portfolio-square.html">Square</a></li>
-                                        <li><a href="portfolio-single.html">single Post</a></li>
+                                        <li><a href="#">About Us</a></li>
+                                        <li><a href="#">Our Services</a></li>
+                                        <li><a href="#">FAQs</a></li>
                                     </ul>
                                 </li>
                             </ul>
 
                             <ul class="navigation menu-right clearfix">
-                                <li class="dropdown"><a href="blog-showcase.html">Blog</a>
-                                    <ul>
-                                        <li><a href="blog-showcase.html">Checkerboard</a></li>
-                                        <li><a href="blog-standard.html">Standard</a></li>
-                                        <li><a href="blog-masonry.html">Masonry</a></li>
-                                        <li><a href="blog-masonry-full-width.html">Masonry Full Width</a></li>
-                                        <li><a href="blog-two-column.html">Two Columns Grid</a></li>
-                                        <li><a href="blog-three-column-wide.html">Three Columns Wide</a></li>
-                                        <li class="dropdown"><a href="#">Post Types</a>
-                                            <ul>
-                                                <li><a href="blog-single.html">Standard Post</a></li>
-                                                <li><a href="blog-single-2.html">Gallery Post</a></li>
-                                                <li><a href="blog-single-3.html">Video Post</a></li>
-                                                <li><a href="blog-single-4.html">Audio Post</a></li>
-                                                <li><a href="blog-single-5.html">Quote Post</a></li>
-                                                <li><a href="blog-single-6.html">Link Post</a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
+                                <li class=""><a href="#">Booking</a></li>
+                                <li class=""><a href="shop.html">Shop</a>
+                                    
                                 </li>
-                                <li class="dropdown"><a href="shop.html">Shop</a>
-                                    <ul>
-                                        <li><a href="shop.html">Shop</a></li>
-                                        <li><a href="shopping-cart.html">Cart</a></li>
-                                        <li><a href="checkout.html">Checkout</a></li>
-                                        <li><a href="login.html">My account</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="contact.html">Contacts</a></li>
+                                <li><a href="#contact.html">Contacts</a></li>
                             </ul>
                         </div>
                     </nav>
@@ -183,11 +149,8 @@
                     <a href="#" title="Sticky Logo"><img src="images/logo-small.png" alt="Sticky Logo"></a>
                 </div>
 
-                <!--Right Col-->
+                <!--Nav Outer-->
                 <div class="nav-outer">
-                    <!--Mobile Navigation Toggler-->
-                    <div class="mobile-nav-toggler"><span class="icon flaticon-menu"></span></div>
-                    
                     <!-- Main Menu -->
                     <nav class="main-menu">
                         <!--Keep This Empty / Menu will come through Javascript-->
@@ -207,7 +170,7 @@
         </div>
 
         <!-- Mobile Menu  -->
-        <div class="mobile-menu">
+        <div class="mobile-menu">            
             <nav class="menu-box">
                 <div class="nav-logo"><a href="index.html"><img src="images/logo-small.png" alt="" title=""></a></div> 
                 <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
@@ -229,189 +192,40 @@
             </div>
         </div>
         <!-- End Header Search -->
+
     </header>
     <!--End Main Header -->
 
-    <!--Page Title-->
-    <section class="page-title" style="background-image:url(https://via.placeholder.com/1920x400)">
-        <div class="auto-container">
-            <h1>Recipes List</h1>
-            <ul class="page-breadcrumb">
-                <li><a href="index.html">home</a></li>
-                <li>Recipes List</li>
-            </ul>
+
+    <!-- Call to Action -->
+ 
+    <!--End Call to Action -->
+
+    <!-- Portfolio Sections -->
+    <!-- Portfolio Sections -->
+<section class="portfolio-section">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <div class="divider"><img src="images/icons/divider_1.png" alt=""></div>
+            <h2>Our Creations</h2>
         </div>
-    </section>
-    <!--End Page Title-->
+        <div id="category-wrappers"></div>
+    </div>
+</section>
+<!--End Projects Sections -->
 
-    <!-- Recipes Section Two -->
-    <section class="recipes-section-two">
-        <div class="auto-container">
+    <!--End Projects Sections -->
+   
 
-            <div class="cooked-recipe-search clearfix">
-                <div class="browse-recipe">
-                    <div class="dropdown">
-                        <button class="browse-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Browse</button>
-                        <div class="dropdown-menu browse-dropdown" aria-labelledby="dropdownMenuButton">
-                            <span class="cooked-title">Categories</span>
-                            <a href="#">Cakes</a>
-                            <a href="#">Cupcakes</a>
-                            <a href="#">Ice-cream</a>
-                            <a href="#">Lollipops</a>
-                            <a href="#">Macarons</a>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Search Recipe Form -->
-                <div class="search-recipe-form">
-                    <form method="post" action="recipes-list.html">
-                        <div class="form-group cooked-sortby-wrap">
-                            <select class="sortby-select select2-offscreen" name="cooked_browse_sort_by" tabindex="-1" title="">
-                                <option value="date_desc" selected="">Newest first</option>
-                                <option value="date_asc">Oldest first</option>
-                                <option value="title_asc">Alphabetical (A-Z)</option>
-                                <option value="title_desc">Alphabetical (Z-A)</option>
-                            </select>
-                        </div>
+ 
 
-                        <div class="form-group">
-                            <input class="cooked-browse-search" type="text" name="cooked_search_s" placeholder="Find a recipe...">
-                        </div>
 
-                        <div class="form-group search-recipe-submit">
-                            <button class="theme-btn" type="submit" name="submit-form"><span class="fa fa-search"></span></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row">
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Red Velvet Cake</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Avocado Ice Cream</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Vanilla Ice Cream</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Chocolate Macarons</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Homemade Ice Cream</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Endless Flavor Capcakes</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Colored Lollipops</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Basic French Macarons</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recipe Block Two -->
-                <div class="recipe-block-two col-lg-4 col-md-6 col-sm-12">
-                    <div class="image-box">
-                        <figure class="image"><a href="recipe-single.html"><img src="https://via.placeholder.com/700x525" alt=""></a></figure>
-                        <div class="caption-box">
-                            <h3 class="recipe-title"><a href="recipe-single.html">Cake with Caramel Icing</a></h3>
-                            <span class="devider"></span>
-                            <div class="author">By <strong>admin</strong></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Styled Pagination -->
-            <div class="styled-pagination text-center">
-                <ul>
-                    <li><a href="#"><span class="current">1</span></a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a class="next" href="#"><i class="fa fa-chevron-right"></i></a></li>
-                </ul>
-            </div>
-        </div>
-    </section>
-    <!-- End Recipes Section Two -->
 
     <!-- Main Footer -->
     <footer class="main-footer">
         <div class="shape_wrapper shape_one">
-            <div class="shape_inner" style="background-image: url(https://via.placeholder.com/1920x1080);"><div class="overlay"></div></div>
+            <div class="shape_inner" style="background-image: url(https://via.placeholder.com/1920x600);"><div class="overlay"></div></div>
         </div>
 
         <!--Widgets Section-->
@@ -491,7 +305,7 @@
         <div class="footer-bottom">
             <div class="auto-container">
                 <div class="copyright-text">
-                    <p>Bellaria - A Delicious Cakes and Bakery WordPress Theme</p>
+                    <p>The Cake Kitchen</p>
                 </div>
             </div>
         </div>
@@ -517,13 +331,146 @@
     <span class="fa fa-angle-up"></span>
 </div>
 
+
+<!-- Portfolio Sections -->
+<section class="portfolio-section">
+    <div class="auto-container">
+        <div class="sec-title text-center">
+            <div class="divider"><img src="images/icons/divider_1.png" alt=""></div>
+            <h2>Our Creations</h2>
+        </div>
+        <div id="category-wrappers"></div>
+    </div>
+</section>
+<!--End Projects Sections -->
+
+<script>
+    // Fetch products and categories from the server
+    fetch('fetch_products.php')
+        .then(response => response.json())
+        .then(data => {
+            const products = data.products;
+            const categories = data.categories;
+
+            // Function to generate HTML for a shop item
+            function generateShopItem(product) {
+                return `
+                    <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
+                        <div class="inner-box">
+                            <div class="image-box">
+                                <div class="sale-tag">sale!</div>
+                                <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
+                                <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
+                            </div>
+                            <div class="lower-content">
+                                <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
+                                <div class="rating">${getRatingStars(product.rating)}</div>
+                                <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Function to generate star icons based on rating
+            function getRatingStars(rating) {
+                var stars = '';
+                for (var i = 0; i < 5; i++) {
+                    if (i < rating) {
+                        stars += '<span class="fa fa-star"></span>';
+                    } else {
+                        stars += '<span class="fa fa-star light"></span>';
+                    }
+                }
+                return stars;
+            }
+
+            // Function to handle next button click
+            function nextButtonClick(categoryIndex) {
+                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+                currentItemIndexes[categoryIndex] = Math.min(currentItemIndexes[categoryIndex] + 2, products.length - 1); // Increment index by 2
+                var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+                var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+                shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+            }
+
+            // Function to handle previous button click
+            function prevButtonClick(categoryIndex) {
+                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+                currentItemIndexes[categoryIndex] = Math.max(currentItemIndexes[categoryIndex] - 2, 0); // Decrement index by 2
+                var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+                var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+                shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+            }
+
+            // Insert category wrappers into the DOM
+            var categoryWrappersContainer = document.getElementById('category-wrappers');
+            categories.forEach((category, index) => {
+                var categoryWrapper = document.createElement('div');
+                categoryWrapper.classList.add('category-wrapper');
+                if (index > 1 && index < categories.length - 1) {
+                    categoryWrapper.classList.add('reduced-spacing');
+                }
+
+                var categoryHeader = document.createElement('div');
+                categoryHeader.classList.add('category-header');
+                categoryHeader.innerHTML = `
+                    <h2 class="underline-category">${category}</h2>
+                    <div class="navigation-buttons">
+                        <button class="scroll-button prev-button" onclick="prevButtonClick(${index})"><i class="fas fa-chevron-left"></i></button>
+                        <button class="scroll-button next-button" onclick="nextButtonClick(${index})"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                `;
+
+                var shopItemsContainer = document.createElement('div');
+                shopItemsContainer.classList.add('shop-items-container', 'row', 'clearfix');
+
+                categoryWrapper.appendChild(categoryHeader);
+                categoryWrapper.appendChild(shopItemsContainer);
+                categoryWrappersContainer.appendChild(categoryWrapper);
+            });
+
+            // Insert shop items into the DOM
+            var shopItemsContainers = document.querySelectorAll('.shop-items-container');
+            shopItemsContainers.forEach((container, index) => {
+                products.forEach(product => {
+                    if (product.category === categories[index]) {
+                        var shopItemHTML = generateShopItem(product);
+                        container.innerHTML += shopItemHTML;
+                    }
+                });
+            });
+
+            // Get the width of the first shop item after the DOM has loaded
+            window.onload = function() {
+                var shopItem = document.querySelector('.shop-item');
+                shopItemWidth = shopItem.offsetWidth;
+            };
+        })
+        .catch(error => console.error('Error fetching products:', error));
+</script>
+
+
 <script src="js/jquery.js"></script> 
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<!--Revolution Slider-->
+<script src="plugins/revolution/js/jquery.themepunch.revolution.min.js"></script>
+<script src="plugins/revolution/js/jquery.themepunch.tools.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.actions.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.carousel.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.kenburn.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.layeranimation.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.migration.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.navigation.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.parallax.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.slideanims.min.js"></script>
+<script src="plugins/revolution/js/extensions/revolution.extension.video.min.js"></script>
+<script src="js/main-slider-script.js"></script>
+<!--Revolution Slider-->
 <script src="js/jquery.fancybox.js"></script>
 <script src="js/owl.js"></script>
 <script src="js/wow.js"></script>
-<script src="js/select2.min.js"></script>
 <script src="js/appear.js"></script>
 <script src="js/script.js"></script>
 </body>
