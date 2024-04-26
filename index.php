@@ -332,122 +332,125 @@
 </div>
 
 
-<!-- Portfolio Sections -->
-<section class="portfolio-section">
-    <div class="auto-container">
-        <div class="sec-title text-center">
-            <div class="divider"><img src="images/icons/divider_1.png" alt=""></div>
-            <h2>Our Creations</h2>
-        </div>
-        <div id="category-wrappers"></div>
-    </div>
-</section>
-<!--End Projects Sections -->
 
 <script>
-    // Fetch products and categories from the server
-    fetch('fetch_products.php')
-        .then(response => response.json())
-        .then(data => {
-            const products = data.products;
-            const categories = data.categories;
+// Define global variables
+let product, category, shopItemWidth, currentItemIndexes = [];
 
-            // Function to generate HTML for a shop item
-            function generateShopItem(product) {
-                return `
-                    <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
-                        <div class="inner-box">
-                            <div class="image-box">
-                                <div class="sale-tag">sale!</div>
-                                <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
-                                <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
-                            </div>
-                            <div class="lower-content">
-                                <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
-                                <div class="rating">${getRatingStars(product.rating)}</div>
-                                <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+// Function to handle next button click
+function nextButtonClick(categoryIndex) {
+    var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+    currentItemIndexes[categoryIndex] = Math.min(currentItemIndexes[categoryIndex] + 2, product.length - 1); // Increment index by 2
+    var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+    var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+    shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+}
+
+// Function to handle previous button click
+function prevButtonClick(categoryIndex) {
+    var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
+    currentItemIndexes[categoryIndex] = Math.max(currentItemIndexes[categoryIndex] - 2, 0); // Decrement index by 2
+    var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
+    var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
+    shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
+}
+
+// Fetch product and category from the server
+fetch('fetch_products.php')
+    .then(response => response.json())
+    .then(data => {
+        product = data.product;
+        category = data.category;
+
+function generateShopItem(product) {
+    return `
+        <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
+            <div class="inner-box">
+                <div class="image-box">
+                    <div class="sale-tag">sale!</div>
+                    <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
+                    <div class="btn-box"><a href="#" onclick="addToCart(\`${JSON.stringify(product).replace(/'/g, "&apos;")}\`)">Add to cart</a></div>
+                </div>
+                <div class="lower-content">
+                    <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
+                    <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+        // Insert category wrappers into the DOM
+        var categoryWrappersContainer = document.getElementById('category-wrappers');
+        category.forEach((category, index) => {
+            var categoryWrapper = document.createElement('div');
+            categoryWrapper.classList.add('category-wrapper');
+            if (index > 1 && index < category.length - 1) {
+                categoryWrapper.classList.add('reduced-spacing');
             }
 
-            // Function to generate star icons based on rating
-            function getRatingStars(rating) {
-                var stars = '';
-                for (var i = 0; i < 5; i++) {
-                    if (i < rating) {
-                        stars += '<span class="fa fa-star"></span>';
-                    } else {
-                        stars += '<span class="fa fa-star light"></span>';
-                    }
+            var categoryHeader = document.createElement('div');
+            categoryHeader.classList.add('category-header');
+            categoryHeader.innerHTML = `
+                <h2 class="underline-category">${category}</h2>
+                <div class="navigation-buttons">
+                    <button class="scroll-button prev-button" onclick="prevButtonClick(${index})"><i class="fas fa-chevron-left"></i></button>
+                    <button class="scroll-button next-button" onclick="nextButtonClick(${index})"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            `;
+
+            var shopItemsContainer = document.createElement('div');
+            shopItemsContainer.classList.add('shop-items-container', 'row', 'clearfix');
+
+            categoryWrapper.appendChild(categoryHeader);
+            categoryWrapper.appendChild(shopItemsContainer);
+            categoryWrappersContainer.appendChild(categoryWrapper);
+        });
+
+        // Insert shop items into the DOM
+        var shopItemsContainers = document.querySelectorAll('.shop-items-container');
+        shopItemsContainers.forEach((container, index) => {
+            product.forEach(product => {
+                if (product.category === category[index]) {
+                    var shopItemHTML = generateShopItem(product);
+                    container.innerHTML += shopItemHTML;
                 }
-                return stars;
-            }
-
-            // Function to handle next button click
-            function nextButtonClick(categoryIndex) {
-                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
-                currentItemIndexes[categoryIndex] = Math.min(currentItemIndexes[categoryIndex] + 2, products.length - 1); // Increment index by 2
-                var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
-                var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
-                shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
-            }
-
-            // Function to handle previous button click
-            function prevButtonClick(categoryIndex) {
-                var shopItemsContainer = document.querySelectorAll('.shop-items-container')[categoryIndex];
-                currentItemIndexes[categoryIndex] = Math.max(currentItemIndexes[categoryIndex] - 2, 0); // Decrement index by 2
-                var scrollAmount = shopItemWidth * currentItemIndexes[categoryIndex];
-                var scrollSpeed = 500; // Adjust scroll speed (milliseconds)
-                shopItemsContainer.scroll({ left: scrollAmount, behavior: 'smooth' });
-            }
-
-            // Insert category wrappers into the DOM
-            var categoryWrappersContainer = document.getElementById('category-wrappers');
-            categories.forEach((category, index) => {
-                var categoryWrapper = document.createElement('div');
-                categoryWrapper.classList.add('category-wrapper');
-                if (index > 1 && index < categories.length - 1) {
-                    categoryWrapper.classList.add('reduced-spacing');
-                }
-
-                var categoryHeader = document.createElement('div');
-                categoryHeader.classList.add('category-header');
-                categoryHeader.innerHTML = `
-                    <h2 class="underline-category">${category}</h2>
-                    <div class="navigation-buttons">
-                        <button class="scroll-button prev-button" onclick="prevButtonClick(${index})"><i class="fas fa-chevron-left"></i></button>
-                        <button class="scroll-button next-button" onclick="nextButtonClick(${index})"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                `;
-
-                var shopItemsContainer = document.createElement('div');
-                shopItemsContainer.classList.add('shop-items-container', 'row', 'clearfix');
-
-                categoryWrapper.appendChild(categoryHeader);
-                categoryWrapper.appendChild(shopItemsContainer);
-                categoryWrappersContainer.appendChild(categoryWrapper);
             });
+            currentItemIndexes.push(0); // Initialize the index for each category to 0
+        });
 
-            // Insert shop items into the DOM
-            var shopItemsContainers = document.querySelectorAll('.shop-items-container');
-            shopItemsContainers.forEach((container, index) => {
-                products.forEach(product => {
-                    if (product.category === categories[index]) {
-                        var shopItemHTML = generateShopItem(product);
-                        container.innerHTML += shopItemHTML;
-                    }
-                });
-            });
-
-            // Get the width of the first shop item after the DOM has loaded
-            window.onload = function() {
-                var shopItem = document.querySelector('.shop-item');
+        // Get the width of the first shop item after inserting the items into the DOM
+        setTimeout(() => {
+            var shopItem = document.querySelector('.shop-item');
+            if (shopItem) {
                 shopItemWidth = shopItem.offsetWidth;
-            };
-        })
-        .catch(error => console.error('Error fetching products:', error));
+            } else {
+                console.error('No shop items found');
+            }
+        }, 100); // Delay of 100 milliseconds
+    })
+    .catch(error => console.error('Error fetching product:', error));
+
+function addToCart(productData) {
+    const product = JSON.parse(productData);
+
+    // Send an AJAX request to add the product to the cart
+    fetch('add_to_cart.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(product)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Cart update:', data.message);
+        // You can optionally display a success message or update the cart count
+    })
+    .catch(error => {
+        console.error('Error adding to cart:', error);
+    });
+}
+
 </script>
 
 

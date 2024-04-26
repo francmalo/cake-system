@@ -361,26 +361,24 @@ fetch('fetch_products.php')
     .then(data => {
         product = data.product;
         category = data.category;
-
-        // Function to generate HTML for a shop item
-        function generateShopItem(product) {
-            return `
-                <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
-                    <div class="inner-box">
-                        <div class="image-box">
-                            <div class="sale-tag">sale!</div>
-                            <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
-                            <div class="btn-box"><a href="shopping-cart.html">Add to cart</a></div>
-                        </div>
-                        <div class="lower-content">
-                            <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
-                            <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
-                        </div>
-                    </div>
+        
+function generateShopItem(product) {
+    return `
+        <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="${product.category}">
+            <div class="inner-box">
+                <div class="image-box">
+                    <div class="sale-tag">sale!</div>
+                    <figure class="image"><a href="shop-single.html"><img src="${product.imageSrc}" alt=""></a></figure>
+                    <div class="btn-box"><a href="#" onclick="addToCart(\`${JSON.stringify(product).replace(/'/g, "&apos;")}\`)">Add to cart</a></div>
                 </div>
-            `;
-        }
-
+                <div class="lower-content">
+                    <h4 class="name"><a href="shop-single.html">${product.name}</a></h4>
+                    <div class="price"><del>${product.oldPrice}</del> ${product.newPrice}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
         // Insert category wrappers into the DOM
         var categoryWrappersContainer = document.getElementById('category-wrappers');
         category.forEach((category, index) => {
@@ -431,6 +429,18 @@ fetch('fetch_products.php')
         }, 100); // Delay of 100 milliseconds
     })
     .catch(error => console.error('Error fetching product:', error));
+
+function addToCart(productData) {
+    const product = JSON.parse(productData);
+    console.log('Product ID:', product.id);
+    console.log('Product Name:', product.name);
+    console.log('Product Image URL:', product.imageSrc);
+    console.log('Old Price:', product.oldPrice);
+    console.log('New Price:', product.newPrice);
+    console.log('Category:', product.category);
+    // You can further customize this function to store the product in the browser's local storage or send an AJAX request to the server
+}
+
 </script>
 
 
