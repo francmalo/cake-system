@@ -35,6 +35,7 @@ if (isset($_GET['id'])) {
         if (!$product_exists) {
             $_SESSION['cart'][] = array(
                 'id' => $row['product_id'],
+                'image_url' => $row['image_url'],
                 'name' => $row['product_name'],
                 'price' => $row['current_price'],
                 'quantity' => 1 // You can modify the initial quantity if needed

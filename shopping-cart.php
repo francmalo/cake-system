@@ -1,9 +1,18 @@
 <?php
-// Start the session
-session_start();
 
-// Set the session lifetime (if needed)
+
+ob_start(); // Start output buffering
 ini_set('session.gc_maxlifetime', 3600); // 1 hour
+session_start(); //
+
+
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: signin.php");
+    exit;
+}
+
+
 
 // Check if the cart is empty
 if (empty($_SESSION['cart'])) {
@@ -337,9 +346,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $total += $itemTotal;
                             ?>
                                     <tr class="cart-item">
+
                                         <td class="product-thumbnail"><a
                                                 href="shop-single.php?id=<?php echo $item['id']; ?>"><img
-                                                    src="<?php echo $item['image_url']; ?>" alt=""></a></td>
+                                                    src="<?php echo htmlspecialchars_decode($item['image_url']); ?>"
+                                                    alt=""></a></td>
                                         <td class="product-name"><a
                                                 href="shop-single.php?id=<?php echo $item['id']; ?>"><?php echo $item['name']; ?></a>
                                         </td>
@@ -398,8 +409,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     class="col price">$<?php echo number_format($total, 2); ?></span></li>
                             <li class="clearfix"><span class="col">Total</span><span
                                     class="col total-price">$<?php echo number_format($total, 2); ?></span></li>
-                            <li class="text-right"><button type="submit" class="theme-btn proceed-btn">Proceed to
-                                    Checkout</button></li>
+
+                            <li class="text-right">
+                                <button type="submit" class="theme-btn proceed-btn" id="proceedToCheckoutBtn">Proceed to
+                                    Checkout</button>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -567,6 +582,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             window.location.href = "shopping-cart.php?action=remove&key=" + key;
         }
     }
+
+
+    document.getElementById('proceedToCheckoutBtn').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+
+        // Check if the user is logged in
+        if (<?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>) {
+            // User is logged in, redirect to checkout.php
+            window.location.href = 'checkout.php';
+        } else {
+            // User is not logged in, redirect to signin.php
+            window.location.href = 'signin.php';
+        }
+    });
     </script>
 
 
