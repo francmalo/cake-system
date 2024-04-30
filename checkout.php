@@ -26,15 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'];
 
 
-    // Insert into the orders table
-   $order_date = $conn->query("SELECT FROM_UNIXTIME(UNIX_TIMESTAMP())")->fetch_row()[0];
-    $order_status = 1; // Set a default order status (e.g., 1 for pending)
-    $invoice_status = 1; // Set a default invoice status (e.g., 1 for pending)
-    $query = "INSERT INTO orders (user_id, order_date, delivery_type, address, phone, order_status, invoice_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('iisisii', $_SESSION['user_id'], $order_date, $delivery_type, $address, $phone, $order_status, $invoice_status);
-    $stmt->execute();
-    $order_id = $stmt->insert_id;
+   // Insert into the orders table
+$order_date = date('Y-m-d H:i:s');
+$delivery_date = date('Y-m-d'); // Assuming you want to set the delivery date to the current date
+$order_status = 1; // Set a default order status (e.g., 1 for pending)
+$invoice_status = 1; // Set a default invoice status (e.g., 1 for pending)
+$query = "INSERT INTO orders (user_id, order_date, delivery_date, delivery_type, address, phone, order_status, invoice_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param('issssiii', $_SESSION['user_id'], $order_date, $delivery_date, $delivery_type, $address, $phone, $order_status, $invoice_status);
+$stmt->execute();
+$order_id = $stmt->insert_id;
 
     // Insert into the orderline table
     foreach ($_SESSION['cart'] as $item) {
