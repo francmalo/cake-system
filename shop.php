@@ -73,7 +73,7 @@ $html .= '
             <div class="btn-box"><a href="shop-single.php?id=' . $product['product_id'] . '">View Options</a></div>
         </div>
         <div class="lower-content">
-            <h4 class="name"><a href="product-details.php?id=' . $product['product_id'] . '">' .
+            <h4 class="name"><a href="shop-single.php?id=' . $product['product_id'] . '">' .
                     $product['product_name'] . '</a></h4>
 
             <div class="rating">

@@ -2,63 +2,66 @@
 // Start the session
 session_start();
 
-// Check if the product ID is provided
-if (isset($_GET['id'])) {
-    $product_id = $_GET['id'];
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $product_id = $_POST['product_id'];
+    $weight = $_POST['size'];
+    $message = $_POST['message'];
+    $quantity = $_POST['quantity'];
+
+
+     // Print the received form data for debugging
+    echo "Product ID: " . $product_id . "<br>";
+    echo "Weight: " . $weight . "<br>";
+    echo "Message: " . $message . "<br>";
+    echo "Quantity: " . $quantity . "<br>";
 
     // Connect to the database
     require_once 'config.php';
 
-    // Fetch the product details from the database
-    $sql = "SELECT * FROM product WHERE product_id = $product_id";
-    $result = $conn->query($sql);
+
+    // Prepare the SQL statement to fetch the product details
+    $stmt = $conn->prepare("SELECT * FROM product WHERE product_id = ?");
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Prepare the SQL statement to fetch the price for the selected weight
+    $stmt_price = null; // Initialize with null
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
 
-        // Initialize the cart array if it doesn't exist
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = array();
-        }
+        $stmt_price = $conn->prepare("SELECT price FROM pricelist WHERE product_id = ? AND weight = ?");
+        if ($stmt_price) { // Check if preparation was successful
+            $stmt_price->bind_param("is", $product_id, $weight);
+            $stmt_price->execute();
+            $result_price = $stmt_price->get_result();
 
-        // Check if the product already exists in the cart
-        $product_exists = false;
-        foreach ($_SESSION['cart'] as &$item) {
-            if ($item['id'] == $product_id) {
-                $item['quantity']++;
-                $product_exists = true;
-                break;
+            if ($result_price->num_rows > 0) {
+                $row_price = $result_price->fetch_assoc();
+                $price = $row_price['price'];
+
+                // ... (Rest of the code remains the same) ...
+
+            } else {
+                echo "Price not found for the selected weight.";
             }
-        }
-
-        // If the product doesn't exist, add it to the cart
-        if (!$product_exists) {
-            $_SESSION['cart'][] = array(
-                'id' => $row['product_id'],
-                'image_url' => $row['image_url'],
-                'name' => $row['product_name'],
-                'price' => $row['current_price'],
-                'quantity' => 1 // You can modify the initial quantity if needed
-            );
-        }
-
-        // Regenerate the session ID (if needed)
-        // session_regenerate_id(true);
-
-        // Set a session variable to store the notification message
-        if ($product_exists) {
-            $_SESSION['notification'] = "Product already exists in the cart. Quantity increased.";
         } else {
-            $_SESSION['notification'] = "Product added to the cart successfully.";
+            echo "Failed to prepare the statement to fetch price.";
         }
-
-        // Redirect back to the previous page or display a success message
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
-        exit;
     } else {
         echo "Product not found.";
+    }
+
+    // Close the prepared statements
+    $stmt->close();
+    if ($stmt_price !== null) { // Check if $stmt_price is not null
+        $stmt_price->close();
     }
 } else {
     echo "Invalid request.";
 }
-?>
+
+// Close the database connection
+$conn->close();

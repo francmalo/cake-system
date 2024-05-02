@@ -4,13 +4,16 @@ require_once 'config.php';
 if (isset($_GET['id'])) {
     $productId = $_GET['id'];
 
-    // Prepare and execute the SQL query using prepared statements
-    $sql = "SELECT p.product_name, MAX(p.image_url) AS image_url, c.category_name, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
-            FROM product p
-            JOIN category c ON p.category_id = c.category_id
-            LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-            WHERE p.product_id = ?
-            GROUP BY p.product_name, c.category_name";
+  
+
+
+
+$sql="SELECT p.product_name, MAX(p.image_url) AS image_url, c.category_name, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price, p.product_desc
+FROM product p
+JOIN category c ON p.category_id = c.category_id
+LEFT JOIN pricelist pl ON p.product_id = pl.product_id
+WHERE p.product_id = ?
+GROUP BY p.product_name, c.category_name, p.product_desc";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $productId);
@@ -67,6 +70,47 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
     <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+
+
+    <style>
+    .size-options {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .size-options label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .size-options select {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .cake-message {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .cake-message label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .cake-message input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    </style>
 </head>
 
 <body>
@@ -309,14 +353,18 @@ if (isset($_GET['id'])) {
                                                     class="lightbox-image" title="Image Caption Here"><img
                                                         src="images/products/pic8.jpg" alt=""><span
                                                         class="icon fa fa-search"></span></a></figure> -->
+                                            <form method="post" action="add_to_cart.php">
+                                                <input type="hidden" name="product_id"
+                                                    value="<?php echo $product['product_id']; ?>">
 
-                                            <figure class="image">
-                                                <a href="<?php echo $product['image_url']; ?>" class="lightbox-image"
-                                                    title="<?php echo $product['product_name']; ?>">
-                                                    <img src="<?php echo $product['image_url']; ?>" alt="">
-                                                    <span class="icon fa fa-search"></span>
-                                                </a>
-                                            </figure>
+                                                <figure class="image">
+                                                    <a href="<?php echo $product['image_url']; ?>"
+                                                        class="lightbox-image"
+                                                        title="<?php echo $product['product_name']; ?>">
+                                                        <img src="<?php echo $product['image_url']; ?>" alt="">
+                                                        <span class="icon fa fa-search"></span>
+                                                    </a>
+                                                </figure>
 
 
 
@@ -325,13 +373,9 @@ if (isset($_GET['id'])) {
                                             <div class="details-header">
                                                 <h4><?php echo $product['product_name']; ?></h4>
 
-                                                <div class="item-price">Price: $<?php echo $product['min_price']; ?>
+                                                <div class="item-price">Price: Ksh<?php echo $product['min_price']; ?>
                                                     (<?php echo $product['min_weight']; ?>kg)</div>
-                                                <!-- <div class="item-price"><php echo $product['current_price']; ></div> -->
-                                                <div class="text">Accumsan lectus, consectetuer et sagittis et commodo,
-                                                    massa et, sed facilisi mi, sit diam. Ultrices facilisi convallis
-                                                    nullam duis. Aliquam lacinia orci convallis erat ac, vitae neque in
-                                                    class.</div>
+                                                <div class="text"><?php echo $product['product_desc']; ?></div>
                                             </div>
 
 
@@ -339,34 +383,42 @@ if (isset($_GET['id'])) {
 
                                             <div class="size-options">
                                                 <label for="size">Select Size (Weight):</label>
-                                                <select id="size" name="size">
+                                                <select id="size" name="size" class="form-select">
                                                     <?php
-                                                    if (!empty($sizes)) {
+                                                        if (!empty($sizes)) {
                                                         foreach ($sizes as $weight => $price) {
-                                                            echo '<option value="' . $weight . '">' . $weight . ' - $' . $price . '</option>';
+                                                            echo '<option value="' . $weight . '">' . $weight . ' kg - Ksh' . $price . '</option>';
                                                         }
-                                                    } else {
+                                                        } else {
                                                         echo '<option value="">No sizes available</option>';
-                                                    }
-                                                    ?>
+                                                        }
+                                                        ?>
                                                 </select>
                                             </div>
-                                            <!-- <div class="price-display">
-                                                <span id="selected-price">Price:
-                                                    $<!?php echo !empty($sizes) ? reset($sizes) : 0; ?></span>
-                                            </div> -->
+
+                                            <div class="cake-message">
+                                                <label for="message">Add a Cake Message:</label>
+                                                <input type="text" id="message" name="message"
+                                                    placeholder="e.g. Happy Birthday My Dear" />
+                                                <small>We don't charge extra for this</small>
+                                            </div>
 
 
                                             <div class="other-options clearfix">
                                                 <div class="item-quantity">Quantity <input class="qty" type="number"
                                                         value="1" name="quantity"></div>
-                                                <button type="button" class="theme-btn add-to-cart"><span
-                                                        class="btn-title">Add To Cart</span></button>
+                                                <button type="submit" class="theme-btn add-to-cart">
+                                                    <span class="btn-title">Add To Cart</span>
+                                                </button>
+
                                                 <ul class="product-meta">
-                                                    <li class="posted_in">Category: <a href="#">Cake</a></li>
-                                                    <li class="tagged_as">Tag: <a href="#">Nuts</a></li>
+
+                                                    <li class="posted_in">Category: <a
+                                                            href="#"><?php echo $product['category_name']; ?></a></li>
+                                                    <!-- <li class="tagged_as">Tag: <a href="#">Nuts</a></li> -->
                                                 </ul>
                                             </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -379,32 +431,17 @@ if (isset($_GET['id'])) {
 
                                         <!--Tab Btns-->
                                         <ul class="tab-btns tab-buttons clearfix">
-                                            <li data-tab="#prod-details" class="tab-btn">Descripton</li>
-                                            <li data-tab="#prod-info" class="tab-btn">Additional Information</li>
-                                            <li data-tab="#prod-reviews" class="tab-btn active-btn">Review (2)</li>
+                                            <li data-tab="#prod-Info" class="tab-btn active-btn">Additional
+                                                Information
+                                            </li>
                                         </ul>
 
                                         <!--Tabs Container-->
                                         <div class="tabs-content">
 
                                             <!--Tab-->
-                                            <div class="tab" id="prod-details">
-                                                <h2 class="title">Descripton</h2>
-                                                <div class="content">
-                                                    <p>Accumsan lectus, consectetuer et sagittis et commodo, massa et,
-                                                        sed facilisi mi, sit diam. Ultrices facilisi convallis nullam
-                                                        duis. Aliquam lacinia orci convallis erat ac, vitae neque in
-                                                        class. Suscipit vel, rhoncus est quis nibh netus, aenean
-                                                        eleifend et viverra, neque accumsan maecenas nec in. Morbi
-                                                        bibendum non ullamcorper aliquam natoque, tortor dui, vestibulum
-                                                        vulputate pulvinar iaculis magna lectus ut, facilisis id mollis
-                                                        risus lorem. Massa nulla cum nunc litora ac amet, accumsan
-                                                        faucibus integer, vestibulum turpis cras, ante imperdiet
-                                                        tincidunt accumsan, vivamus lacinia bibendum augue maiores
-                                                        mauris.</p>
-                                                </div>
-                                            </div>
-                                            <div class="tab" id="prod-info">
+
+                                            <div class="tab active-tab" id="prod-info">
                                                 <h2 class="title">Additional Information</h2>
                                                 <div class="content">
                                                     <p>Accumsan lectus, consectetuer et sagittis et commodo, massa et,
@@ -421,104 +458,7 @@ if (isset($_GET['id'])) {
                                                 </div>
                                             </div>
 
-                                            <!--Tab-->
-                                            <div class="tab active-tab" id="prod-reviews">
-                                                <h2 class="title">2 reviews for Birthday Cake</h2>
-                                                <!--Reviews Container-->
-                                                <div class="comments-area">
-                                                    <!--Comment Box-->
-                                                    <div class="comment-box">
-                                                        <div class="comment">
-                                                            <div class="author-thumb"><img
-                                                                    src="https://via.placeholder.com/60x60" alt="">
-                                                            </div>
-                                                            <div class="comment-inner">
-                                                                <div class="comment-info clearfix">
-                                                                    <strong class="name">Stuart</strong>
-                                                                    <span class="date">– 07 Jun</span>
-                                                                </div>
-                                                                <div class="rating">
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star light"></span>
-                                                                </div>
-                                                                <div class="text">This will go great with my Hoodie that
-                                                                    I ordered a few weeks ago.</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
 
-                                                    <!--Comment Box-->
-                                                    <div class="comment-box">
-                                                        <div class="comment">
-                                                            <div class="author-thumb"><img
-                                                                    src="https://via.placeholder.com/60x60" alt="">
-                                                            </div>
-                                                            <div class="comment-inner">
-                                                                <div class="comment-info clearfix">
-                                                                    <strong class="name">Maria</strong>
-                                                                    <span class="date">– 07 Jun</span>
-                                                                </div>
-                                                                <div class="rating">
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star"></span>
-                                                                    <span class="fa fa-star light"></span>
-                                                                </div>
-                                                                <div class="text">Love this shirt! The ninja near and
-                                                                    dear to my heart.</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!--Comment Form-->
-                                                <div class="comment-form">
-                                                    <div class="sub-title">Add a review</div>
-                                                    <div class="form-outer">
-                                                        <p>Your email address will not be published. Required fields are
-                                                            marked *</p>
-                                                        <div class="rating-box">
-                                                            <div class="field-label">Your Rating</div>
-                                                            <div class="rating">
-                                                                <a href="#"><span class="fa fa-star"></span></a>
-                                                                <a href="#"><span class="fa fa-star"></span></a>
-                                                                <a href="#"><span class="fa fa-star"></span></a>
-                                                                <a href="#"><span class="fa fa-star"></span></a>
-                                                                <a href="#"><span class="fa fa-star"></span></a>
-                                                            </div>
-                                                        </div>
-                                                        <form method="post" action="blog-showcase.html">
-                                                            <div class="row clearfix">
-                                                                <div class="col-lg-12 col-md-12 col-sm-12 form-group">
-                                                                    <div class="field-label">Your review *</div>
-                                                                    <textarea name="message" placeholder=""></textarea>
-                                                                </div>
-
-                                                                <div class="col-lg-6 col-md-12 col-sm-12 form-group">
-                                                                    <div class="field-label">Name *</div>
-                                                                    <input type="text" name="username" placeholder=""
-                                                                        required="">
-                                                                </div>
-
-                                                                <div class="col-lg-6 col-md-12 col-sm-12 form-group">
-                                                                    <div class="field-label">Email *</div>
-                                                                    <input type="email" name="email" placeholder=""
-                                                                        required="">
-                                                                </div>
-
-                                                                <div
-                                                                    class="col-lg-12 col-md-12 col-sm-12 form-group text-right">
-                                                                    <input type="submit" name="submit" value="Submit">
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -547,7 +487,8 @@ if (isset($_GET['id'])) {
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span></div>
+                                                            class="fa fa-star light"></span>
+                                                    </div>
                                                     <div class="price">$17.00</div>
                                                 </div>
                                             </div>
@@ -568,7 +509,8 @@ if (isset($_GET['id'])) {
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span></div>
+                                                            class="fa fa-star light"></span>
+                                                    </div>
                                                     <div class="price">$35.00</div>
                                                 </div>
                                             </div>
@@ -589,7 +531,8 @@ if (isset($_GET['id'])) {
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
                                                             class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span></div>
+                                                            class="fa fa-star light"></span>
+                                                    </div>
                                                     <div class="price">$17.00</div>
                                                 </div>
                                             </div>
@@ -600,53 +543,8 @@ if (isset($_GET['id'])) {
                         </div><!-- End Shop Single -->
                     </div>
 
-                    <!--Sidebar Side-->
-                    <!-- <div class="sidebar-side sticky-container col-lg-3 col-md-12 col-sm-12">
-                        <aside class="sidebar theiaStickySidebar">
-                            <div class="sticky-sidebar"> -->
-                    <!-- Search Widget -->
-                    <!-- <div class="sidebar-widget search-widget">
-                        <form method="post" action="contact.html">
-                            <div class="form-group">
-                                <input type="search" name="search-field" value="" placeholder="Search products…"
-                                    required>
-                                <button type="submit"><span class="icon fa fa-search"></span></button>
-                            </div>
-                        </form>
-                    </div> -->
 
-                    <!-- Cart Widget -->
-                    <!-- <div class="sidebar-widget cart-widget">
-                        <div class="widget-content">
-                            <h3 class="widget-title">Categories</h3>
 
-                            <div class="shopping-cart">
-
-                            </div> -->
-                    <!--end shopping-cart -->
-                    <!-- </div>
-            </div> -->
-                    <!-- Tags Widget -->
-                    <!-- <div class="sidebar-widget tags-widget">
-                        <h3 class="widget-title">Tags</h3>
-                        <ul class="tag-list clearfix">
-                            <li><a href="#">Bars</a></li>
-                            <li><a href="#">Caramels</a></li>
-                            <li><a href="#">Chocolate</a></li>
-                            <li><a href="#">Fruit</a></li>
-                            <li><a href="#">Nuts</a></li>
-                            <li><a href="#">Toffees</a></li>
-                            <li><a href="#">Top Rated</a></li>
-                            <li><a href="#">Truffles</a></li>
-                        </ul>
-                    </div>
-                </div>
-                </aside>
-            </div>
-        </div>
-    </div>
-    </div> -->
-                    <!--End Sidebar Page Container-->
 
                     <?php
     } else {
