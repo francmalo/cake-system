@@ -19,23 +19,13 @@ require_once 'config.php';
 
 // Query to fetch product and category
 // $sql = "SELECT p.*, c.category_name FROM product p JOIN category c ON p.category_id = c.category_id";
-$sql = "SELECT
-    p.product_id,
-    p.product_name,
-    MAX(p.image_url) AS image_url,
-    c.category_name,
-    MIN(pl.weight) AS min_weight,
-    MIN(pl.price) AS min_price
-FROM
-    product p
-    JOIN category c ON p.category_id = c.category_id
-    LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-GROUP BY
-    p.product_id,
-    p.product_name,
-    c.category_name
-ORDER BY
-    min_weight";
+
+$sql ="SELECT p.product_name, p.image_url, c.category_name, MIN(pl.weight) AS min_weight, pl.price
+FROM product p
+JOIN category c ON p.category_id = c.category_id
+LEFT JOIN pricelist pl ON p.product_id = pl.product_id
+GROUP BY p.product_id, c.category_name, pl.price
+ORDER BY min_weight";
 
 
 $result = $conn->query($sql);
@@ -70,7 +60,7 @@ $html .= '
         <div class="image-box">
             <figure class="image"><a href="shop-single.php?id=' . $product['product_id'] . '"><img
                         src="' . $product['image_url'] . '" alt=""></a></figure>
-            <div class="btn-box"><a href="shop-single.php?id=' . $product['product_id'] . '">View Options</a></div>
+            <div class="btn-box"><a href="add_to_cart.php?id=' . $product['product_id'] . '">Add to cart</a></div>
         </div>
         <div class="lower-content">
             <h4 class="name"><a href="product-details.php?id=' . $product['product_id'] . '">' .
@@ -83,7 +73,7 @@ $html .= '
                 <span class="fa fa-star"></span>
                 <span class="fa fa-star light"></span>
             </div>
-            <div class="price">$' . $product['min_price'] . '</div>
+            <div class="price">$' . $product['price'] . '</div>
         </div>
     </div>
 </div>

@@ -215,7 +215,7 @@ return $html;
                                     <li class="dropdown current"><a href="shop.html">Shop</a>
                                         <ul>
                                             <li class="current"><a href="shop.html">Shop</a></li>
-                                            <li><a href="shopping-cart.html">Cart</a></li>
+                                            <li><a href="shopping-cart.php">Cart</a></li>
                                             <li><a href="checkout.html">Checkout</a></li>
                                             <li><a href="login.html">My account</a></li>
                                         </ul>
@@ -229,7 +229,7 @@ return $html;
                         <div class="outer-box clearfix">
                             <!-- Shoppping Car -->
                             <div class="cart-btn">
-                                <a href="shopping-cart.html"><i class="icon flaticon-commerce"></i> <span
+                                <a href="shopping-cart.php"><i class="icon flaticon-commerce"></i> <span
                                         class="count">2</span></a>
 
                                 <div class="shopping-cart">
@@ -255,7 +255,7 @@ return $html;
 
                                     <div class="cart-footer">
                                         <div class="shopping-cart-total"><strong>Subtotal:</strong> $97.00</div>
-                                        <a href="cart.html" class="theme-btn">View Cart</a>
+                                        <a href="shopping-cart.php" class="theme-btn">View Cart</a>
                                         <a href="checkout.html" class="theme-btn">Checkout</a>
                                     </div>
                                 </div>

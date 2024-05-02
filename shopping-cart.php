@@ -6,12 +6,6 @@ ini_set('session.gc_maxlifetime', 3600); // 1 hour
 session_start(); //
 
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: signin.php");
-    exit;
-}
-
 
 
 // Check if the cart is empty

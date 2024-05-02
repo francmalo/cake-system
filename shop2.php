@@ -1,7 +1,5 @@
+<!DOCTYPE html>
 <?php
-
-
-
 // Start the session
 session_start();
 
@@ -12,90 +10,82 @@ if (isset($_SESSION['notification'])) {
 } else {
     $notification = '';
 }
+
 require_once 'config.php';
 
-
-
-
-// Query to fetch product and category
-// $sql = "SELECT p.*, c.category_name FROM product p JOIN category c ON p.category_id = c.category_id";
-$sql = "SELECT
-    p.product_id,
-    p.product_name,
-    MAX(p.image_url) AS image_url,
-    c.category_name,
-    MIN(pl.weight) AS min_weight,
-    MIN(pl.price) AS min_price
-FROM
-    product p
-    JOIN category c ON p.category_id = c.category_id
-    LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-GROUP BY
-    p.product_id,
-    p.product_name,
-    c.category_name
-ORDER BY
-    min_weight";
-
-
-$result = $conn->query($sql);
-
-$products = [];
+// Query to fetch distinct category names
+$sql_categories = "SELECT DISTINCT category_name FROM category";
+$result_categories = $conn->query($sql_categories);
 $categories = [];
 
-// Populate $products and $categories arrays
+// Populate $categories array
+if ($result_categories->num_rows > 0) {
+    while ($row = $result_categories->fetch_assoc()) {
+        $categories[] = $row['category_name'];
+    }
+}
+
+// Query to fetch product, category, and the first weight of each product
+$sql = "SELECT pl.*, p.product_name, c.category_name
+        FROM pricelist pl
+        INNER JOIN (
+            SELECT product_id, MIN(weight) AS min_weight
+            FROM pricelist
+            GROUP BY product_id
+        ) sub ON pl.product_id = sub.product_id AND pl.weight = sub.min_weight
+        INNER JOIN product p ON pl.product_id = p.product_id
+        INNER JOIN category c ON p.category_id = c.category_id";
+$result = $conn->query($sql);
+$products = [];
+
+// Populate $products array
 if ($result->num_rows > 0) {
-while ($row = $result->fetch_assoc()) {
-$products[] = $row;
-$categories[$row['category_name']] = $row['category_name'];
+    while ($row = $result->fetch_assoc()) {
+        $products[] = $row;
+    }
 }
-}
+
+// Rest of the code remains the same
 
 // Default category is 'all'
 $currentCategory = 'all';
 
 // If category is selected from the dropdown, update $currentCategory
 if (isset($_GET['category'])) {
-$currentCategory = $_GET['category'];
+    $currentCategory = $_GET['category'];
 }
 
 // Function to display products based on category
-function displayProducts($category, $products) {
-$html = '';
-foreach ($products as $product) {
-if ($category === 'all' || strtolower($product['category_name']) === strtolower($category)) {
-$html .= '
-<div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="' . strtolower($product['category_name']) . '">
-    <div class="inner-box">
-        <div class="image-box">
-            <figure class="image"><a href="shop-single.php?id=' . $product['product_id'] . '"><img
-                        src="' . $product['image_url'] . '" alt=""></a></figure>
-            <div class="btn-box"><a href="shop-single.php?id=' . $product['product_id'] . '">View Options</a></div>
-        </div>
-        <div class="lower-content">
-            <h4 class="name"><a href="product-details.php?id=' . $product['product_id'] . '">' .
-                    $product['product_name'] . '</a></h4>
-
-            <div class="rating">
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star light"></span>
-            </div>
-            <div class="price">$' . $product['min_price'] . '</div>
-        </div>
-    </div>
-</div>
-';
-}
-}
-return $html;
+function displayProducts($category, $products)
+{
+    $html = '';
+    foreach ($products as $product) {
+        if ($category === 'all' || strtolower($product['category_name']) === strtolower($category)) {
+            $html .= ' <div class="shop-item col-lg-4 col-md-6 col-sm-12" data-category="' . strtolower($product['category_name']) . '">
+                <div class="inner-box">
+                    <div class="image-box">
+                        <figure class="image"><a href="shop-single.php?id=' . $product['product_id'] . '"><img src="' . $product['image_url'] . '" alt=""></a></figure>
+                        <div class="btn-box"><a href="add_to_cart.php?id=' . $product['product_id'] . '">Add to cart</a></div>
+                    </div>
+                    <div class="lower-content">
+                        <h4 class="name"><a href="product-details.php?id=' . $product['product_id'] . '">' . $product['product_name'] . '</a></h4>
+                        <div class="rating">
+                            <span class="fa fa-star"></span>
+                            <span class="fa fa-star"></span>
+                            <span class="fa fa-star"></span>
+                            <span class="fa fa-star"></span>
+                            <span class="fa fa-star light"></span>
+                        </div>
+                       <div class="price">$' . $product['price'] . ' (' . $product['weight'] . ' kg)</div>
+                    </div>
+                </div>
+            </div>';
+        }
+    }
+    return $html;
 }
 ?>
 
-
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
