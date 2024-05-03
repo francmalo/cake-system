@@ -326,6 +326,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr>
                                         <th class="product-thumbnail">&nbsp;</th>
                                         <th class="product-name">Product</th>
+
+                                        <th class="product-message">Message</th>
+
                                         <th class="product-price">Price</th>
                                         <th class="product-quantity">Quantity</th>
                                         <th class="product-subtotal">Total</th>
@@ -342,16 +345,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <tr class="cart-item">
 
                                         <td class="product-thumbnail"><a
-                                                href="shop-single.php?id=<?php echo $item['id']; ?>"><img
+                                                href="shop-single.php?id=<?php echo $item['product_id']; ?>"><img
                                                     src="<?php echo htmlspecialchars_decode($item['image_url']); ?>"
                                                     alt=""></a></td>
-                                        <td class="product-name"><a
-                                                href="shop-single.php?id=<?php echo $item['id']; ?>"><?php echo $item['name']; ?></a>
+                                        <td class="product-name-with-weight">
+                                            <a href="shop-single.php?id=<?php echo $item['product_id']; ?>">
+                                                <?php echo $item['product_name']; ?> (<?php echo $item['weight']; ?>
+                                                Kgs)
+                                            </a>
                                         </td>
-                                        <td class="product-price">$<?php echo number_format($item['price'], 2); ?></td>
+
+                                        <td class="product-message"><?php echo $item['message']; ?></td>
+
+                                        <td class="product-price"><?php echo number_format($item['price'], 2); ?>Ksh
+                                        </td>
                                         <td class="product-quantity">
                                             <div class="quantity">
-                                                <label>Quantity</label>
+
                                                 <input type="number" class="qty" name="quantity[<?php echo $key; ?>]"
                                                     id="qty_<?php echo $key; ?>"
                                                     value="<?php echo $item['quantity']; ?>" min="1"
@@ -359,7 +369,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </div>
                                         </td>
                                         <td class="product-subtotal"><span
-                                                class="amount">$<?php echo number_format($itemTotal, 2); ?></span></td>
+                                                class="amount"><?php echo number_format($itemTotal, 2); ?>Ksh</span>
+                                        </td>
                                         <td class="product-remove">
                                             <a href="#" class="remove"
                                                 onclick="confirmRemove(event, '<?php echo $key; ?>')"><span
@@ -400,9 +411,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <h3>Cart Totals</h3>
                             </li>
                             <li class="clearfix"><span class="col">Subtotal</span><span
-                                    class="col price">$<?php echo number_format($total, 2); ?></span></li>
+                                    class="col price"><?php echo number_format($total, 2); ?>Ksh</span></li>
                             <li class="clearfix"><span class="col">Total</span><span
-                                    class="col total-price">$<?php echo number_format($total, 2); ?></span></li>
+                                    class="col total-price"><?php echo number_format($total, 2); ?>Ksh</span></li>
 
                             <li class="text-right">
                                 <button type="submit" class="theme-btn proceed-btn" id="proceedToCheckoutBtn">Proceed to

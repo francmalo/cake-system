@@ -1,4 +1,19 @@
 <?php
+
+
+
+// Start the session
+session_start();
+
+// Check if a notification message exists
+if (isset($_SESSION['notification'])) {
+    $notification = $_SESSION['notification'];
+    unset($_SESSION['notification']); // Clear the notification message
+} else {
+    $notification = '';
+}
+
+
 require_once 'config.php';
 
 if (isset($_GET['id'])) {
@@ -125,6 +140,47 @@ $conn->close();
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 1rem;
+    }
+
+    #notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .notification {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        animation: fadeIn 0.3s ease-in-out forwards, fadeOut 3s 3s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
     }
     </style>
 </head>
@@ -348,6 +404,13 @@ $conn->close();
             </div>
         </section>
         <!--End Page Title-->
+        <!-- Notification container -->
+        <div id="notification-container">
+            <?php if (!empty($notification)) : ?>
+            <div class="notification"><?php echo $notification; ?></div>
+            <?php endif; ?>
+        </div>
+
 
         <!--Sidebar Page Container-->
         <div class="sidebar-page-container">
@@ -758,6 +821,23 @@ $conn->close();
 
                     // Set the default price
                     $('#selected-price').text('Price: $' + defaultPrice);
+                });
+
+
+
+
+                // Wait for the DOM to load
+                document.addEventListener('DOMContentLoaded', function() {
+                    var notificationContainer = document.getElementById('notification-container');
+                    var notifications = notificationContainer.getElementsByClassName('notification');
+
+                    // Loop through each notification and add a click event listener
+                    for (var i = 0; i < notifications.length; i++) {
+                        var notification = notifications[i];
+                        notification.addEventListener('click', function() {
+                            this.style.display = 'none'; // Hide the notification on click
+                        });
+                    }
                 });
                 </script>
                 <script src="js/jquery.js"></script>
