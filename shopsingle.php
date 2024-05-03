@@ -2,13 +2,18 @@
 require_once 'config.php';
 
 if (isset($_GET['id'])) {
-    $productId = $_GET['id'];
-$sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
-        FROM product p
-        LEFT JOIN category c ON p.category_id = c.category_id
-        LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-        WHERE p.product_id = ?
-        GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc";
+$productId = $_GET['id'];
+
+  
+
+
+
+$sql="SELECT  p.product_name, MAX(p.image_url) AS image_url, c.category_name, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price, p.product_desc
+FROM product p
+JOIN category c ON p.category_id = c.category_id
+LEFT JOIN pricelist pl ON p.product_id = pl.product_id
+WHERE p.product_id = ?
+GROUP BY p.product_name, c.category_name, p.product_desc";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $productId);
@@ -17,54 +22,33 @@ $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN
 
     if ($result->num_rows > 0) {
         $product = $result->fetch_assoc();
+        
+      // Prepare and execute the SQL query to fetch all weights and prices for the product
+        $sql2 = "SELECT pl.weight, pl.price
+                 FROM pricelist pl
+                 WHERE pl.product_id = ?
+                 ORDER BY pl.weight";
 
-        // Prepare and execute the SQL query to fetch the price for the selected weight
-        $weight = isset($_POST['size']) ? $_POST['size'] : null;
-        $stmt_price = $conn->prepare("SELECT price FROM pricelist WHERE product_id = ? AND (? IS NULL OR weight = ?)");
-        $stmt_price->bind_param("isi", $productId, $weight, $weight);
-        $stmt_price->execute();
-        $result_price = $stmt_price->get_result();
+        $stmt2 = $conn->prepare($sql2);
+        $stmt2->bind_param("i", $productId);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
 
-        if ($result_price->num_rows > 0) {
-            $row_price = $result_price->fetch_assoc();
-            $price = $row_price['price'];
+        $sizes = array();
 
-            // Fetch all sizes (weights) and prices for the product
-            $sql2 = "SELECT weight, price FROM pricelist WHERE product_id = ? ORDER BY weight";
-            $stmt2 = $conn->prepare($sql2);
-            $stmt2->bind_param("i", $productId);
-            $stmt2->execute();
-            $result2 = $stmt2->get_result();
-
-            $sizes = array();
-
-            while ($row = $result2->fetch_assoc()) {
-                $sizes[$row['weight']] = $row['price'];
-            }
-
-            // Sort the sizes in natural order (e.g., "1kg", "2kg", "10kg")
-            if (!empty($sizes)) {
-                natsort($sizes);
-            }
-
-            $stmt2->close();
-        } else {
-            echo "Price not found for the selected weight.";
+        // Fetch all sizes (weights) and prices for the product
+        while ($row = $result2->fetch_assoc()) {
+            $sizes[$row['weight']] = $row['price'];
         }
 
-        $stmt_price->close();
-    } else {
-        echo "Product not found.";
-    }
+        // Sort the sizes in natural order (e.g., "1kg", "2kg", "10kg")
+        if (!empty($sizes)) {
+            natsort($sizes);
+        }
+        ?>
 
-    $stmt->close();
-} else {
-    echo "Invalid product ID.";
-}
+<!-- Your HTML code to display the product details -->
 
-// Close the database connection
-$conn->close();
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -370,17 +354,9 @@ $conn->close();
                                                         src="images/products/pic8.jpg" alt=""><span
                                                         class="icon fa fa-search"></span></a></figure> -->
                                             <form method="post" action="add_to_cart.php">
-                                                <!-- hidden values -->
-
                                                 <input type="hidden" name="product_id"
                                                     value="<?php echo $productId; ?>">
-                                                <input type="hidden" name="product_name"
-                                                    value="<?php echo $product['product_name']; ?>">
-                                                <input type="hidden" name="image_url"
-                                                    value="<?php echo $product['image_url']; ?>">
-                                                <input type="hidden" name="product_desc"
-                                                    value="<?php echo $product['product_desc']; ?>">
-                                                <!-- end hidden values -->
+
                                                 <figure class="image">
                                                     <a href="<?php echo $product['image_url']; ?>"
                                                         class="lightbox-image"
@@ -409,16 +385,17 @@ $conn->close();
                                                 <label for="size">Select Size (Weight):</label>
                                                 <select id="size" name="size" class="form-select">
                                                     <?php
-            if (!empty($sizes)) {
-                foreach ($sizes as $weight => $price) {
-                    echo '<option value="' . $weight . '">' . $weight . ' kg - Ksh' . $price . '</option>';
-                }
-            } else {
-                echo '<option value="">No sizes available</option>';
-            }
-            ?>
+                                                        if (!empty($sizes)) {
+                                                        foreach ($sizes as $weight => $price) {
+                                                            echo '<option value="' . $weight . '">' . $weight . ' kg - Ksh' . $price . '</option>';
+                                                        }
+                                                        } else {
+                                                        echo '<option value="">No sizes available</option>';
+                                                        }
+                                                        ?>
                                                 </select>
                                             </div>
+
                                             <div class="cake-message">
                                                 <label for="message">Add a Cake Message:</label>
                                                 <input type="text" id="message" name="message"
@@ -569,6 +546,14 @@ $conn->close();
 
 
 
+                    <?php
+    } else {
+        echo "Product not found. Check the database for the product with ID: " . $productId;
+    }
+} else {
+    echo "Invalid product ID.";
+}
+?>
 
 
                     <!-- Main Footer -->

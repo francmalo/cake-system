@@ -5,63 +5,56 @@ session_start();
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $product_id = $_POST['product_id'];
+    $product_name = isset($_POST['product_name']) ? $_POST['product_name'] : '';
+    $image_url = isset($_POST['image_url']) ? $_POST['image_url'] : '';
+    $product_desc = isset($_POST['product_desc']) ? $_POST['product_desc'] : '';
     $weight = $_POST['size'];
     $message = $_POST['message'];
     $quantity = $_POST['quantity'];
 
-
-     // Print the received form data for debugging
-    echo "Product ID: " . $product_id . "<br>";
-    echo "Weight: " . $weight . "<br>";
-    echo "Message: " . $message . "<br>";
-    echo "Quantity: " . $quantity . "<br>";
-
     // Connect to the database
     require_once 'config.php';
 
-
-    // Prepare the SQL statement to fetch the product details
-    $stmt = $conn->prepare("SELECT * FROM product WHERE product_id = ?");
-    $stmt->bind_param("i", $product_id);
+    // Fetch the price for the selected weight
+    $stmt = $conn->prepare("SELECT price FROM pricelist WHERE product_id = ? AND weight = ?");
+    $stmt->bind_param("is", $product_id, $weight);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Prepare the SQL statement to fetch the price for the selected weight
-    $stmt_price = null; // Initialize with null
-
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        $price = $row['price'];
 
-        $stmt_price = $conn->prepare("SELECT price FROM pricelist WHERE product_id = ? AND weight = ?");
-        if ($stmt_price) { // Check if preparation was successful
-            $stmt_price->bind_param("is", $product_id, $weight);
-            $stmt_price->execute();
-            $result_price = $stmt_price->get_result();
+        // Add the product to the cart
+        $item = array(
+            'product_id' => $product_id,
+            'product_name' => $product_name,
+            'image_url' => $image_url,
+            'product_desc' => $product_desc,
+            'weight' => $weight,
+            'message' => $message,
+            'quantity' => $quantity,
+            'price' => $price
+        );
 
-            if ($result_price->num_rows > 0) {
-                $row_price = $result_price->fetch_assoc();
-                $price = $row_price['price'];
-
-                // ... (Rest of the code remains the same) ...
-
-            } else {
-                echo "Price not found for the selected weight.";
-            }
-        } else {
-            echo "Failed to prepare the statement to fetch price.";
+        // Check if the cart already exists in the session
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = array();
         }
+
+        // Add the item to the cart
+        $_SESSION['cart'][] = $item;
+
+        // Redirect to the cart page
+        header('Location: cart.php');
+        exit;
     } else {
-        echo "Product not found.";
+        echo "Price not found for the selected weight.";
     }
 
-    // Close the prepared statements
     $stmt->close();
-    if ($stmt_price !== null) { // Check if $stmt_price is not null
-        $stmt_price->close();
-    }
+    $conn->close();
 } else {
     echo "Invalid request.";
 }
-
-// Close the database connection
-$conn->close();
+?>
