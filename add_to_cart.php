@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'product_desc' => $product_desc,
                 'weight' => $weight,
                 'message' => $message,
+                'pricelist_id' => $pricelist_id, // Add this line
                 'quantity' => $quantity,
                 'price' => $price
             );

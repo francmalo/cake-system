@@ -25,30 +25,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = $_POST['address'];
     $phone = $_POST['phone'];
 
+    // Insert into the orders table
+    $order_date = date('Y-m-d H:i:s');
+    $delivery_date = date('Y-m-d'); // Assuming you want to set the delivery date to the current date
+    $order_status = 1; // Set a default order status (e.g., 1 for pending)
+    $invoice_status = 1; // Set a default invoice status (e.g., 1 for pending)
+    $query = "INSERT INTO orders (user_id, order_date, delivery_date, delivery_type, address, phone, order_status, invoice_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-   // Insert into the orders table
-$order_date = date('Y-m-d H:i:s');
-$delivery_date = date('Y-m-d'); // Assuming you want to set the delivery date to the current date
-$order_status = 1; // Set a default order status (e.g., 1 for pending)
-$invoice_status = 1; // Set a default invoice status (e.g., 1 for pending)
-$query = "INSERT INTO orders (user_id, order_date, delivery_date, delivery_type, address, phone, order_status, invoice_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('issssiii', $_SESSION['user_id'], $order_date, $delivery_date, $delivery_type, $address, $phone, $order_status, $invoice_status);
+    $stmt->execute();
+    $order_id = $stmt->insert_id;
 
-$stmt = $conn->prepare($query);
-$stmt->bind_param('issssiii', $_SESSION['user_id'], $order_date, $delivery_date, $delivery_type, $address, $phone, $order_status, $invoice_status);
-$stmt->execute();
-$order_id = $stmt->insert_id;
-
-    // Insert into the orderline table
-    foreach ($_SESSION['cart'] as $item) {
-        $product_id = $item['id'];
-        $price = $item['price'];
-        $quantity = $item['quantity'];
-        $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
-        $query = "INSERT INTO orderline (order_id, product_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('iidii', $order_id, $product_id, $price, $quantity, $orderline_status);
-        $stmt->execute();
-    }
+// Insert into the orderline table
+foreach ($_SESSION['cart'] as $item) {
+    $product_id = $item['id'];
+    $pricelist_id = $item['pricelist_id']; // Retrieve the pricelist_id from the session
+    $price = $item['price'];
+    $quantity = $item['quantity'];
+    $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
+    $query = "INSERT INTO orderline (order_id, product_id, pricelist_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('iiidii', $order_id, $product_id, $pricelist_id, $price, $quantity, $orderline_status);
+    $stmt->execute();
+}
 
     // Clear the cart session
     unset($_SESSION['cart']);
@@ -342,367 +342,277 @@ $order_id = $stmt->insert_id;
                     </div>
                 </div>
 
-                <!--Checkout Details-->
-                <div class="checkout-form">
-                    <form method="post" action="checkout.html">
-                        <div class="row clearfix">
-                            <!--Column-->
-                            <div class="column col-lg-6 col-md-12 col-sm-12">
-                                <div class="inner-column">
-                                    <div class="sec-title">
-                                        <h3>Billing details</h3>
-                                    </div>
+            </div>
+            </form>
+    </div>
+    <!--End Checkout Details-->
 
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">First name <sup>*</sup></div>
-                                        <input type="text" name="field-name" value="" placeholder="">
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Last name <sup>*</sup></div>
-                                        <input type="text" name="field-name" value="" placeholder="">
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Company name (optional)</div>
-                                        <input type="text" name="field-name" value="" placeholder="">
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Street address <sup>*</sup></div>
-                                        <input type="text" name="field-name" value=""
-                                            placeholder="House number and street name">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <input type="text" name="field-name" value=""
-                                            placeholder="Apartment,suite,unit etc. (optional)">
-                                    </div>
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">State / County <sup>*</sup></div>
-                                        <input type="text" name="field-name" value="" placeholder="" required="">
-                                    </div>
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Town / City <sup>*</sup></div>
-                                        <input type="text" name="field-name" value="" placeholder="" required="">
-                                    </div>
+    <!--CheckOut Page-->
+    <section class="checkout-page">
+        <div class="auto-container">
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                <!--Order Box-->
+                <div class="order-box">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="product-name">Product</th>
+                                <th class="product-total">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($_SESSION['cart'] as $item): ?>
+                            <tr class="cart-item">
+                                <td class="product-name">
+                                    <?php echo $item['product_name'] . ' (' . $item['weight'] . ' kgs)'; ?>
+                                    <strong class="product-quantity">×
+                                        <?php echo $item['quantity']; ?></strong>
+                                </td>
+                                <td class="product-total">
+                                    <span class="woocommerce-Price-amount amount"><span
+                                            class="woocommerce-Price-currencySymbol">Ksh</span>
+                                        <?php echo number_format($item['price'] * $item['quantity'], 2); ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
 
 
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Postcode/ ZIP <sup>*</sup></div>
-                                        <input type="text" name="field-name" value="" placeholder="" required="">
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Phone</div>
-                                        <input type="text" name="field-name" value="" placeholder="">
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group">
-                                        <div class="field-label">Email Address</div>
-                                        <input type="text" name="field-name" value="" placeholder="">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!--Column-->
-                            <div class="column col-lg-6 col-md-12 col-sm-12">
-                                <div class="inner-column">
-                                    <div class="sec-title">
-                                        <h3>Additional information</h3>
-                                    </div>
-
-                                    <!--Form Group-->
-                                    <div class="form-group ">
-                                        <div class="field-label">Order notes (optional)</div>
-                                        <textarea class=""
-                                            placeholder="Notes about your order,e.g. special notes for delivery."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                        </tbody>
+                        <tfoot>
+                            <tr class="cart-subtotal">
+                                <th>Subtotal</th>
+                                <td><span class="amount">Ksh<?php echo number_format($total_cost, 2); ?></span>
+                                </td>
+                            </tr>
+                            <tr class="order-total">
+                                <th>Total</th>
+                                <td><strong class="amount">Ksh<?php echo number_format($total_cost, 2); ?></strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <!--End Checkout Details-->
-
-                <!--CheckOut Page-->
-                <section class="checkout-page">
-                    <div class="auto-container">
-                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                            <!--Order Box-->
-                            <div class="order-box">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th class="product-name">Product</th>
-                                            <th class="product-total">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($_SESSION['cart'] as $item): ?>
-                                        <tr class="cart-item">
-                                            <td class="product-name">
-                                                <?php echo $item['product_name'] . ' (' . $item['weight'] . ' kgs)'; ?>
-                                                <strong class="product-quantity">×
-                                                    <?php echo $item['quantity']; ?></strong>
-                                            </td>
-                                            <td class="product-total">
-                                                <span class="woocommerce-Price-amount amount"><span
-                                                        class="woocommerce-Price-currencySymbol">Ksh</span>
-                                                    <?php echo number_format($item['price'] * $item['quantity'], 2); ?>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        <?php endforeach; ?>
+                <!--End Order Box-->
 
 
-                                    </tbody>
-                                    <tfoot>
-                                        <tr class="cart-subtotal">
-                                            <th>Subtotal</th>
-                                            <td><span
-                                                    class="amount">Ksh<?php echo number_format($total_cost, 2); ?></span>
-                                            </td>
-                                        </tr>
-                                        <tr class="order-total">
-                                            <th>Total</th>
-                                            <td><strong
-                                                    class="amount">Ksh<?php echo number_format($total_cost, 2); ?></strong>
-                                            </td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <!--End Order Box-->
-
-
-                            <!--Payment Box-->
-                            <div class="payment-box">
-                                <div class="upper-box">
-                                    <!--Payment Options-->
-                                    <div class="payment-options">
-                                        <ul>
-                                            <li>
-                                                <div class="radio-option">
-                                                    <input type="radio" name="payment-group" id="payment-2" checked>
-                                                    <label for="payment-2"><strong>Direct Bank Transfer</strong><span
-                                                            class="small-text">Make your payment directly into our bank
-                                                            account.
-                                                            Please use your Order ID as the payment reference. Your
-                                                            order won’t
-                                                            be shipped until the funds have cleared in our
-                                                            account.</span></label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="radio-option">
-                                                    <input type="radio" name="payment-group" id="payment-1">
-                                                    <label for="payment-1"><strong>Check Payments</strong><span
-                                                            class="small-text">Make your payment directly into our bank
-                                                            account.
-                                                            Please use your Order ID as the payment reference. Your
-                                                            order won’t
-                                                            be shipped until the funds have cleared in our
-                                                            account.</span></label>
-                                                </div>
-                                            </li>
-
-                                            <li>
-                                                <div class="radio-option">
-                                                    <input type="radio" name="payment-group" id="payment-3">
-                                                    <label for="payment-3"><strong>Cash on Delivery</strong><span
-                                                            class="small-text">Make your payment directly into our bank
-                                                            account.
-                                                            Please use your Order ID as the payment reference. Your
-                                                            order won’t
-                                                            be shipped until the funds have cleared in our
-                                                            account.</span></label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="text">Your personal data will be used to process your order, support
-                                            your
-                                            experience throughout this website, and for other purposes described in our
-                                            <a href="#">privacy policy.</a>
-                                        </div>
+                <!--Payment Box-->
+                <div class="payment-box">
+                    <div class="upper-box">
+                        <!--Payment Options-->
+                        <div class="payment-options">
+                            <ul>
+                                <li>
+                                    <div class="radio-option">
+                                        <input type="radio" name="payment-group" id="payment-2" checked>
+                                        <label for="payment-2"><strong>Direct Bank Transfer</strong><span
+                                                class="small-text">Make your payment directly into our bank
+                                                account.
+                                                Please use your Order ID as the payment reference. Your
+                                                order won’t
+                                                be shipped until the funds have cleared in our
+                                                account.</span></label>
                                     </div>
-                                </div>
-                                <div class="lower-box">
-                                    <a href="#" class="theme-btn"><span class="btn-title">Place Order</span></a>
-                                </div>
-                            </div>
-                            <!--End Payment Box-->
-
-                            <!--Delivery Details-->
-                            <div class="delivery-details">
-                                <h3>Delivery Details</h3>
-                                <div class="form-group">
-                                    <label for="delivery_type">Delivery Type:</label>
-                                    <select name="delivery_type" id="delivery_type" required>
-                                        <option value="">Select Delivery Type</option>
-                                        <option value="1">Standard Delivery</option>
-                                        <option value="2">Express Delivery</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="address">Address:</label>
-                                    <textarea name="address" id="address" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Phone:</label>
-                                    <input type="text" name="phone" id="phone" required>
-                                </div>
-                            </div>
-                            <!--End Delivery Details-->
-
-                            <!--Payment Box-->
-                            <div class="payment-box">
-                                <!-- Include your payment options and place order button here -->
-                                <button type="submit" class="theme-btn">Place Order</button>
-                            </div>
-                            <!--End Payment Box-->
-                        </form>
-                    </div>
-                </section>
-                <!--End CheckOut Page-->
-
-                <!-- Main Footer -->
-                <footer class="main-footer">
-                    <div class="shape_wrapper shape_one">
-                        <div class="shape_inner" style="background-image: url(images/background/35.jpg);">
-                            <div class="overlay"></div>
-                        </div>
-                    </div>
-
-                    <!--Widgets Section-->
-                    <div class="widgets-section">
-                        <div class="auto-container">
-                            <div class="row">
-                                <!--Footer Column-->
-                                <div class="footer-column col-lg-4 col-md-12 col-sm-12">
-                                    <div class="footer-widget social-widget">
-                                        <div class="widget-title">
-                                            <h3>Follow Us</h3>
-                                            <svg viewBox="0 0 850.4 410.3">
-                                                <path
-                                                    d="M351.6,300.8c45.5,20.8,90.4,42.8,136.4,62.5c23,9.8,43.7,15,68.7,16.8c24.2,1.7,26.9-11.4,47.7-17.2 c36.4-10.2,50.6,30.7,12.4,39.4c-47,10.7-90.1,11.7-135.8-5.3c-43.6-16.2-84-40.4-125.5-61.1c-19.3-9.6-41-21.4-63.2-19.4 c-25.3,2.3-48.4,14.1-74.3,15.3c-33.4,1.5-101.6-4.4-107.8-47.3c-8-55.4,62.8-44,94.4-37.5c27.8,5.7,54.3,16.5,81.9,22 c27.9,5.7,49.2-4.2,74.5-15.3c49.2-21.6,108.5-37,152.6-67.4c-73-44.3-144.1-91.2-222.1-126.4c-68.4-30.9-157.2-64-226-12.7 c-11.1,8.3-20.3,19.6-26,32.2c-6.4,14-2.7,29.4-7.8,42.9C27.4,133.4,16,141,4.9,129.5c-10.1-10.4-2-33.4,2.1-44.6 C28.2,27.4,86.9,0.5,145,0c78.1-0.7,153.1,31.3,222.4,64.4c35.5,16.9,70.1,35.7,103.2,56.8c30.6,19.5,61.9,54.4,100.8,39.3 c68.6-26.4,131.4-75.9,210-57.7c57.6,13.4,99.3,84.7,40.5,125.7c-32.5,22.7-74.6,30.1-113.6,30c-42.6-0.1-77.9-19.1-117-32.7 c-41.5-14.4-84.9,10.2-124.1,24.2C448.9,256.6,351.9,281.1,351.6,300.8z M604.7,191.1c24.8,28.8,71.1,34.9,107.4,34.4 c31.8-0.4,94.3-7.9,110.4-41.2c23.9-49.5-49.1-56-77.9-51.8C695.1,139.9,649,169.4,604.7,191.1z M131.1,283.8 c25.5,27.4,91,30.7,122.6,7.1C212.6,263.8,153.1,259.8,131.1,283.8z">
-                                                </path>
-                                            </svg>
-                                        </div>
-
-                                        <!-- Social Icons -->
-                                        <ul class="social-icon-one">
-                                            <li><a href="#"><i class="fab fa-facebook-f"></i>
-                                                    <svg viewBox="0 0 850.4 850.4">
-                                                        <path class="st0"
-                                                            d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
-                                                        </path>
-                                                    </svg></a>
-                                            </li>
-
-                                            <li><a href="#"><i class="fab fa-pinterest-p"></i>
-                                                    <svg viewBox="0 0 850.4 850.4">
-                                                        <path class="st0"
-                                                            d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
-                                                        </path>
-                                                    </svg></a>
-                                            </li>
-
-                                            <li><a href="#"><i class="fab fa-twitter"></i>
-                                                    <svg viewBox="0 0 850.4 850.4">
-                                                        <path class="st0"
-                                                            d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
-                                                        </path>
-                                                    </svg></a>
-                                            </li>
-
-                                            <li><a href="#"><i class="fab fa-instagram"></i>
-                                                    <svg viewBox="0 0 850.4 850.4">
-                                                        <path class="st0"
-                                                            d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
-                                                        </path>
-                                                    </svg></a>
-                                            </li>
-
-                                            <li><a href="#"><i class="fab fa-youtube"></i>
-                                                    <svg viewBox="0 0 850.4 850.4">
-                                                        <path class="st0"
-                                                            d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
-                                                        </path>
-                                                    </svg></a>
-                                            </li>
-                                        </ul>
+                                </li>
+                                <li>
+                                    <div class="radio-option">
+                                        <input type="radio" name="payment-group" id="payment-1">
+                                        <label for="payment-1"><strong>Check Payments</strong><span
+                                                class="small-text">Make your payment directly into our bank
+                                                account.
+                                                Please use your Order ID as the payment reference. Your
+                                                order won’t
+                                                be shipped until the funds have cleared in our
+                                                account.</span></label>
                                     </div>
-                                </div>
+                                </li>
 
-                                <!--Footer Column-->
-                                <div class="footer-column col-lg-4 col-md-12 col-sm-12">
-                                    <!--Footer Column-->
-                                    <div class="footer-widget logo-widget">
-                                        <figure class="footer-logo"><img src="images/footer-logo.png" alt=""></figure>
+                                <li>
+                                    <div class="radio-option">
+                                        <input type="radio" name="payment-group" id="payment-3">
+                                        <label for="payment-3"><strong>Cash on Delivery</strong><span
+                                                class="small-text">Make your payment directly into our bank
+                                                account.
+                                                Please use your Order ID as the payment reference. Your
+                                                order won’t
+                                                be shipped until the funds have cleared in our
+                                                account.</span></label>
                                     </div>
-                                </div>
-
-                                <!--Footer Column-->
-                                <div class="footer-column col-lg-4 col-md-12 col-sm-12">
-                                    <div class="footer-widget newslatter-widget">
-                                        <div class="widget-title">
-                                            <h3>Get Our Sweet News</h3>
-                                            <svg viewBox="0 0 850.4 410.3">
-                                                <path
-                                                    d="M351.6,300.8c45.5,20.8,90.4,42.8,136.4,62.5c23,9.8,43.7,15,68.7,16.8c24.2,1.7,26.9-11.4,47.7-17.2 c36.4-10.2,50.6,30.7,12.4,39.4c-47,10.7-90.1,11.7-135.8-5.3c-43.6-16.2-84-40.4-125.5-61.1c-19.3-9.6-41-21.4-63.2-19.4 c-25.3,2.3-48.4,14.1-74.3,15.3c-33.4,1.5-101.6-4.4-107.8-47.3c-8-55.4,62.8-44,94.4-37.5c27.8,5.7,54.3,16.5,81.9,22 c27.9,5.7,49.2-4.2,74.5-15.3c49.2-21.6,108.5-37,152.6-67.4c-73-44.3-144.1-91.2-222.1-126.4c-68.4-30.9-157.2-64-226-12.7 c-11.1,8.3-20.3,19.6-26,32.2c-6.4,14-2.7,29.4-7.8,42.9C27.4,133.4,16,141,4.9,129.5c-10.1-10.4-2-33.4,2.1-44.6 C28.2,27.4,86.9,0.5,145,0c78.1-0.7,153.1,31.3,222.4,64.4c35.5,16.9,70.1,35.7,103.2,56.8c30.6,19.5,61.9,54.4,100.8,39.3 c68.6-26.4,131.4-75.9,210-57.7c57.6,13.4,99.3,84.7,40.5,125.7c-32.5,22.7-74.6,30.1-113.6,30c-42.6-0.1-77.9-19.1-117-32.7 c-41.5-14.4-84.9,10.2-124.1,24.2C448.9,256.6,351.9,281.1,351.6,300.8z M604.7,191.1c24.8,28.8,71.1,34.9,107.4,34.4 c31.8-0.4,94.3-7.9,110.4-41.2c23.9-49.5-49.1-56-77.9-51.8C695.1,139.9,649,169.4,604.7,191.1z M131.1,283.8 c25.5,27.4,91,30.7,122.6,7.1C212.6,263.8,153.1,259.8,131.1,283.8z">
-                                                </path>
-                                            </svg>
-                                        </div>
-
-                                        <!--Newslatter Form-->
-                                        <div class="newslatter-form">
-                                            <form method="post" action="#" id="subscribe-form">
-                                                <div class="form-group">
-                                                    <div class="response"></div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <input type="email" name="email" class="email" value=""
-                                                        placeholder="Your Email Address" required>
-                                                    <button type="button" id="subscribe-newslatters"
-                                                        class="theme-btn"><span class="flaticon-note"></span></button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+                                </li>
+                            </ul>
+                            <div class="text">Your personal data will be used to process your order, support
+                                your
+                                experience throughout this website, and for other purposes described in our
+                                <a href="#">privacy policy.</a>
                             </div>
                         </div>
                     </div>
+                    <div class="lower-box">
+                        <a href="#" class="theme-btn"><span class="btn-title">Place Order</span></a>
+                    </div>
+                </div>
+                <!--End Payment Box-->
 
-                    <!--Footer Bottom-->
-                    <div class="footer-bottom">
-                        <div class="auto-container">
-                            <div class="copyright-text">
-                                <p>Bellaria - A Delicious Cakes and Bakery WordPress Theme</p>
+                <!--Delivery Details-->
+                <div class="delivery-details">
+                    <h3>Delivery Details</h3>
+                    <div class="form-group">
+                        <label for="delivery_type">Delivery Type:</label>
+                        <select name="delivery_type" id="delivery_type" required>
+                            <option value="">Select Delivery Type</option>
+                            <option value="1">Standard Delivery</option>
+                            <option value="2">Express Delivery</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <textarea name="address" id="address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="text" name="phone" id="phone" required>
+                    </div>
+                </div>
+                <!--End Delivery Details-->
+
+                <!--Payment Box-->
+                <div class="payment-box">
+                    <!-- Include your payment options and place order button here -->
+                    <button type="submit" class="theme-btn">Place Order</button>
+                </div>
+                <!--End Payment Box-->
+            </form>
+        </div>
+    </section>
+    <!--End CheckOut Page-->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <div class="shape_wrapper shape_one">
+            <div class="shape_inner" style="background-image: url(images/background/35.jpg);">
+                <div class="overlay"></div>
+            </div>
+        </div>
+
+        <!--Widgets Section-->
+        <div class="widgets-section">
+            <div class="auto-container">
+                <div class="row">
+                    <!--Footer Column-->
+                    <div class="footer-column col-lg-4 col-md-12 col-sm-12">
+                        <div class="footer-widget social-widget">
+                            <div class="widget-title">
+                                <h3>Follow Us</h3>
+                                <svg viewBox="0 0 850.4 410.3">
+                                    <path
+                                        d="M351.6,300.8c45.5,20.8,90.4,42.8,136.4,62.5c23,9.8,43.7,15,68.7,16.8c24.2,1.7,26.9-11.4,47.7-17.2 c36.4-10.2,50.6,30.7,12.4,39.4c-47,10.7-90.1,11.7-135.8-5.3c-43.6-16.2-84-40.4-125.5-61.1c-19.3-9.6-41-21.4-63.2-19.4 c-25.3,2.3-48.4,14.1-74.3,15.3c-33.4,1.5-101.6-4.4-107.8-47.3c-8-55.4,62.8-44,94.4-37.5c27.8,5.7,54.3,16.5,81.9,22 c27.9,5.7,49.2-4.2,74.5-15.3c49.2-21.6,108.5-37,152.6-67.4c-73-44.3-144.1-91.2-222.1-126.4c-68.4-30.9-157.2-64-226-12.7 c-11.1,8.3-20.3,19.6-26,32.2c-6.4,14-2.7,29.4-7.8,42.9C27.4,133.4,16,141,4.9,129.5c-10.1-10.4-2-33.4,2.1-44.6 C28.2,27.4,86.9,0.5,145,0c78.1-0.7,153.1,31.3,222.4,64.4c35.5,16.9,70.1,35.7,103.2,56.8c30.6,19.5,61.9,54.4,100.8,39.3 c68.6-26.4,131.4-75.9,210-57.7c57.6,13.4,99.3,84.7,40.5,125.7c-32.5,22.7-74.6,30.1-113.6,30c-42.6-0.1-77.9-19.1-117-32.7 c-41.5-14.4-84.9,10.2-124.1,24.2C448.9,256.6,351.9,281.1,351.6,300.8z M604.7,191.1c24.8,28.8,71.1,34.9,107.4,34.4 c31.8-0.4,94.3-7.9,110.4-41.2c23.9-49.5-49.1-56-77.9-51.8C695.1,139.9,649,169.4,604.7,191.1z M131.1,283.8 c25.5,27.4,91,30.7,122.6,7.1C212.6,263.8,153.1,259.8,131.1,283.8z">
+                                    </path>
+                                </svg>
+                            </div>
+
+                            <!-- Social Icons -->
+                            <ul class="social-icon-one">
+                                <li><a href="#"><i class="fab fa-facebook-f"></i>
+                                        <svg viewBox="0 0 850.4 850.4">
+                                            <path class="st0"
+                                                d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
+                                            </path>
+                                        </svg></a>
+                                </li>
+
+                                <li><a href="#"><i class="fab fa-pinterest-p"></i>
+                                        <svg viewBox="0 0 850.4 850.4">
+                                            <path class="st0"
+                                                d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
+                                            </path>
+                                        </svg></a>
+                                </li>
+
+                                <li><a href="#"><i class="fab fa-twitter"></i>
+                                        <svg viewBox="0 0 850.4 850.4">
+                                            <path class="st0"
+                                                d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
+                                            </path>
+                                        </svg></a>
+                                </li>
+
+                                <li><a href="#"><i class="fab fa-instagram"></i>
+                                        <svg viewBox="0 0 850.4 850.4">
+                                            <path class="st0"
+                                                d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
+                                            </path>
+                                        </svg></a>
+                                </li>
+
+                                <li><a href="#"><i class="fab fa-youtube"></i>
+                                        <svg viewBox="0 0 850.4 850.4">
+                                            <path class="st0"
+                                                d="M825.8,466.7L825.8,466.7l3-0.9l-3.3,0.8c-3.9-14.6-7.7-28.4-7.7-41.1c0-13.5,3.9-27.7,7.9-42.8 c5.9-21.9,11.9-44.5,6.1-66.3c-6-22.2-22.6-38.8-38.8-54.8c-11-10.9-21.3-21.2-27.8-32.6c-6.6-11.4-10.3-25.5-14.3-40.5 c-5.8-22.1-11.8-44.9-28-61.1c-15.9-16-38.5-22.1-60.4-27.8c-15-4-29.3-7.8-40.9-14.5c-11-6.4-21-16.5-31.7-27.3 c-16.3-16.4-32.9-33.2-55.7-39.4c-22.7-6.1-45.7,0.2-67.8,6.2c-14.6,3.9-28.4,7.7-41,7.7c-13.5,0-27.7-3.9-42.8-7.9 C366.9,20.3,351,16,335.2,16c-6.4,0-12.7,0.7-19,2.4c-22.2,6-38.7,22.6-54.8,38.8c-10.9,11-21.2,21.3-32.6,27.8 s-25.4,10.3-40.4,14.3c-22.1,5.9-44.8,11.8-61,28.1c-16,16-22,38.5-27.8,60.5c-4,15.1-7.8,29.4-14.5,41 c-6.4,11-16.5,21.1-27.3,31.8c-16.4,16.2-33.2,32.9-39.3,55.8c-6.1,22.7,0.2,45.8,6.2,68c3.9,14.6,7.7,28.4,7.7,41.1 c0,13.5-3.9,27.6-7.9,42.8c-5.9,22-11.9,44.6-6.1,66.4c6,22.2,22.6,38.8,38.8,54.9c11,10.9,21.3,21.2,27.8,32.6 c6.6,11.4,10.3,25.4,14.3,40.4c5.9,22.2,11.8,44.9,28,61.2c16,16,38.5,22.1,60.4,27.8c15.1,4,29.3,7.9,40.9,14.5 c11,6.4,21,16.5,31.7,27.2c16.3,16.4,33,33.3,55.8,39.4c6.3,1.6,12.8,2.5,19.7,2.5c16.1,0,32.3-4.4,48-8.7 c14.7-4,28.5-7.8,41.1-7.8c13.5,0,27.6,3.9,42.7,7.9c22,5.9,44.5,11.9,66.3,6.2c22.2-6,38.7-22.7,54.8-38.9 c10.9-11,21.2-21.3,32.5-27.8c11.4-6.5,25.4-10.3,40.3-14.3c22.2-5.9,44.9-11.9,61.1-28.1c16-15.9,22-38.5,27.8-60.5 c4-15.1,7.9-29.4,14.5-41c6.4-11,16.4-21,27.1-31.7c16.4-16.3,33.5-33,39.6-55.9C838,511.9,835.8,488.9,825.8,466.7z">
+                                            </path>
+                                        </svg></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--Footer Column-->
+                    <div class="footer-column col-lg-4 col-md-12 col-sm-12">
+                        <!--Footer Column-->
+                        <div class="footer-widget logo-widget">
+                            <figure class="footer-logo"><img src="images/footer-logo.png" alt=""></figure>
+                        </div>
+                    </div>
+
+                    <!--Footer Column-->
+                    <div class="footer-column col-lg-4 col-md-12 col-sm-12">
+                        <div class="footer-widget newslatter-widget">
+                            <div class="widget-title">
+                                <h3>Get Our Sweet News</h3>
+                                <svg viewBox="0 0 850.4 410.3">
+                                    <path
+                                        d="M351.6,300.8c45.5,20.8,90.4,42.8,136.4,62.5c23,9.8,43.7,15,68.7,16.8c24.2,1.7,26.9-11.4,47.7-17.2 c36.4-10.2,50.6,30.7,12.4,39.4c-47,10.7-90.1,11.7-135.8-5.3c-43.6-16.2-84-40.4-125.5-61.1c-19.3-9.6-41-21.4-63.2-19.4 c-25.3,2.3-48.4,14.1-74.3,15.3c-33.4,1.5-101.6-4.4-107.8-47.3c-8-55.4,62.8-44,94.4-37.5c27.8,5.7,54.3,16.5,81.9,22 c27.9,5.7,49.2-4.2,74.5-15.3c49.2-21.6,108.5-37,152.6-67.4c-73-44.3-144.1-91.2-222.1-126.4c-68.4-30.9-157.2-64-226-12.7 c-11.1,8.3-20.3,19.6-26,32.2c-6.4,14-2.7,29.4-7.8,42.9C27.4,133.4,16,141,4.9,129.5c-10.1-10.4-2-33.4,2.1-44.6 C28.2,27.4,86.9,0.5,145,0c78.1-0.7,153.1,31.3,222.4,64.4c35.5,16.9,70.1,35.7,103.2,56.8c30.6,19.5,61.9,54.4,100.8,39.3 c68.6-26.4,131.4-75.9,210-57.7c57.6,13.4,99.3,84.7,40.5,125.7c-32.5,22.7-74.6,30.1-113.6,30c-42.6-0.1-77.9-19.1-117-32.7 c-41.5-14.4-84.9,10.2-124.1,24.2C448.9,256.6,351.9,281.1,351.6,300.8z M604.7,191.1c24.8,28.8,71.1,34.9,107.4,34.4 c31.8-0.4,94.3-7.9,110.4-41.2c23.9-49.5-49.1-56-77.9-51.8C695.1,139.9,649,169.4,604.7,191.1z M131.1,283.8 c25.5,27.4,91,30.7,122.6,7.1C212.6,263.8,153.1,259.8,131.1,283.8z">
+                                    </path>
+                                </svg>
+                            </div>
+
+                            <!--Newslatter Form-->
+                            <div class="newslatter-form">
+                                <form method="post" action="#" id="subscribe-form">
+                                    <div class="form-group">
+                                        <div class="response"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="email" name="email" class="email" value=""
+                                            placeholder="Your Email Address" required>
+                                        <button type="button" id="subscribe-newslatters" class="theme-btn"><span
+                                                class="flaticon-note"></span></button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                </footer>
-                <!-- End Footer -->
+                </div>
+            </div>
+        </div>
 
-            </div><!-- End Page Wrapper -->
+        <!--Footer Bottom-->
+        <div class="footer-bottom">
+            <div class="auto-container">
+                <div class="copyright-text">
+                    <p>Bellaria - A Delicious Cakes and Bakery WordPress Theme</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer -->
 
-            <!-- Scroll To Top -->
-            <div class="scroll-to-top scroll-to-target" data-target="html">
-                <svg viewBox="0 0 500 500">
-                    <path
-                        d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5
+    </div><!-- End Page Wrapper -->
+
+    <!-- Scroll To Top -->
+    <div class="scroll-to-top scroll-to-target" data-target="html">
+        <svg viewBox="0 0 500 500">
+            <path
+                d="M488.5,274.5L488.5,274.5l1.8-0.5l-2,0.5c-2.4-8.7-4.5-16.9-4.5-24.5c0-8,2.3-16.5,4.7-25.5
         c3.5-13,7.1-26.5,3.7-39.5c-3.6-13.2-13.5-23.1-23.1-32.7c-6.5-6.5-12.6-12.6-16.6-19.4c-3.9-6.8-6.1-15.2-8.5-24.1
         c-3.5-13.1-7.1-26.7-16.7-36.3c-9.5-9.5-22.9-13.1-35.9-16.6c-9-2.4-17.5-4.6-24.4-8.7c-6.5-3.8-12.5-9.8-18.9-16.2
         c-9.7-9.8-19.6-19.8-33.2-23.4c-13.5-3.7-27.3,0.1-40.4,3.7c-8.7,2.4-16.9,4.6-24.5,4.6c-8,0-16.5-2.3-25.5-4.7
@@ -712,21 +622,21 @@ $order_id = $stmt->insert_id;
         c0,8-2.3,16.5-4.6,25.5c-3.5,13-7.1,26.6-3.7,39.5c3.6,13.2,13.5,23.1,23.1,32.7c6.5,6.5,12.6,12.6,16.6,19.4
         c3.9,6.8,6.1,15.1,8.5,24c3.5,13.1,7.1,26.8,16.7,36.4c9.5,9.5,23,13.1,35.9,16.6c9,2.4,17.5,4.6,24.4,8.7
         c6.5,3.8,12.5,9.8,18.9,16.2c9.7,9.8,19.6,19.8,33.2,23.5c3.8,1,7.6,1.5,11.8,1.5c9.6,0,19.3-2.7,28.5-5.1c8.8-2.4,17-4.6,24.5-4.6 c8,0,16.5,2.3,25.5,4.6c13,3.6,26.6,7.1,39.5,3.7c13.2-3.6,23.1-13.5,32.7-23.1c6.5-6.5,12.6-12.6,19.4-16.6 c6.7-3.9,15.1-6.1,24-8.5c13.1-3.5,26.8-7.1,36.4-16.8c9.5-9.5,13.1-23,16.6-36c2.4-9,4.6-17.5,8.7-24.4c3.8-6.5,9.8-12.5,16.2-18.9 c9.8-9.7,19.9-19.7,23.6-33.3C495.7,301.4,494.4,287.7,488.5,274.5z">
-                    </path>
-                </svg>
-                <span class="fa fa-angle-up"></span>
-            </div>
+            </path>
+        </svg>
+        <span class="fa fa-angle-up"></span>
+    </div>
 
-            <script src="js/jquery.js"></script>
-            <script src="js/popper.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
-            <script src="js/jquery.fancybox.js"></script>
-            <script src="js/owl.js"></script>
-            <script src="js/wow.js"></script>
-            <script src="js/appear.js"></script>
-            <script src="js/select2.min.js"></script>
-            <script src="js/sticky_sidebar.min.js"></script>
-            <script src="js/script.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.fancybox.js"></script>
+    <script src="js/owl.js"></script>
+    <script src="js/wow.js"></script>
+    <script src="js/appear.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/sticky_sidebar.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
