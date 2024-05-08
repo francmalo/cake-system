@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $image_url = isset($_POST['image_url']) ? $_POST['image_url'] : '';
     $product_desc = isset($_POST['product_desc']) ? $_POST['product_desc'] : '';
     $weight = $_POST['size'];
+    $pricelist_id = $_POST['pricelistid']; // Get the pricelist_id from the form
     $message = $_POST['message'];
     $quantity = $_POST['quantity'];
 
@@ -51,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'product_desc' => $product_desc,
                 'weight' => $weight,
                 'message' => $message,
-                'pricelist_id' => $pricelist_id, // Add this line
+                'pricelist_id' => $pricelist_id, // Add the pricelist_id
                 'quantity' => $quantity,
                 'price' => $price
             );
@@ -66,8 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['notification'] = "Product already exists in the cart. Quantity increased.";
         }
 
-        // Redirect to the cart page
-         // Redirect back to the previous page or display a success message
+        // Redirect back to the previous page or display a success message
         header('Location: ' . $_SERVER['HTTP_REFERER']);
         exit;
     } else {
@@ -79,5 +79,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo "Invalid request.";
 }
-
 ?>

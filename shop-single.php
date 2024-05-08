@@ -1,7 +1,4 @@
 <?php
-
-
-
 // Start the session
 session_start();
 
@@ -13,17 +10,16 @@ if (isset($_SESSION['notification'])) {
     $notification = '';
 }
 
-
 require_once 'config.php';
 
 if (isset($_GET['id'])) {
     $productId = $_GET['id'];
-$sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
-        FROM product p
-        LEFT JOIN category c ON p.category_id = c.category_id
-        LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-        WHERE p.product_id = ?
-        GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc";
+    $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
+            FROM product p
+            LEFT JOIN category c ON p.category_id = c.category_id
+            LEFT JOIN pricelist pl ON p.product_id = pl.product_id
+            WHERE p.product_id = ?
+            GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $productId);
@@ -35,7 +31,7 @@ $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN
 
         // Prepare and execute the SQL query to fetch the price for the selected weight
         $weight = isset($_POST['size']) ? $_POST['size'] : null;
-        $stmt_price = $conn->prepare("SELECT price FROM pricelist WHERE product_id = ? AND (? IS NULL OR weight = ?)");
+        $stmt_price = $conn->prepare("SELECT pricelist_id, price FROM pricelist WHERE product_id = ? AND (? IS NULL OR weight = ?)");
         $stmt_price->bind_param("isi", $productId, $weight, $weight);
         $stmt_price->execute();
         $result_price = $stmt_price->get_result();
@@ -43,9 +39,10 @@ $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN
         if ($result_price->num_rows > 0) {
             $row_price = $result_price->fetch_assoc();
             $price = $row_price['price'];
+            $pricelistid = $row_price['pricelist_id']; // Fetch the pricelist_id
 
             // Fetch all sizes (weights) and prices for the product
-            $sql2 = "SELECT weight, price FROM pricelist WHERE product_id = ? ORDER BY weight";
+            $sql2 = "SELECT pricelist_id, weight, price FROM pricelist WHERE product_id = ? ORDER BY weight";
             $stmt2 = $conn->prepare($sql2);
             $stmt2->bind_param("i", $productId);
             $stmt2->execute();
@@ -443,6 +440,8 @@ $conn->close();
                                                     value="<?php echo $product['image_url']; ?>">
                                                 <input type="hidden" name="product_desc"
                                                     value="<?php echo $product['product_desc']; ?>">
+
+
                                                 <!-- end hidden values -->
                                                 <figure class="image">
                                                     <a href="<?php echo $product['image_url']; ?>"
@@ -481,6 +480,10 @@ $conn->close();
             }
             ?>
                                                 </select>
+                                                <!-- Include the hidden input field for pricelist_id here -->
+                                                <input type="hidden" name="pricelistid"
+                                                    value="<?php echo $pricelistid; ?>">
+
                                             </div>
                                             <div class="cake-message">
                                                 <label for="message">Add a Cake Message:</label>

@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $delivery_type = $_POST['delivery_type'];
     $address = $_POST['address'];
     $phone = $_POST['phone'];
+    $product_ids = $_POST['product_id']; // Retrieve the product_id array
+    $pricelist_ids = $_POST['pricelist_id']; // Retrieve the pricelist_id array
 
     // Insert into the orders table
     $order_date = date('Y-m-d H:i:s');
@@ -38,17 +40,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $stmt->insert_id;
 
 // Insert into the orderline table
+ // Insert into the orderline table
+    $index = 0;
+    foreach ($_SESSION['cart'] as $item) {
+        $product_id = $product_ids[$index]; // Use the submitted product_id
+        $pricelist_id = $pricelist_ids[$index]; // Use the submitted pricelist_id
+        $price = $item['price'];
+        $quantity = $item['quantity'];
+        $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
+        $query = "INSERT INTO orderline (order_id, product_id, pricelist_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('iiidii', $order_id, $product_id, $pricelist_id, $price, $quantity, $orderline_status);
+        $stmt->execute();
+        $index++;
+    }
+    // Calculate the total amount
+$total_amount = 0;
 foreach ($_SESSION['cart'] as $item) {
-    $product_id = $item['id'];
-    $pricelist_id = $item['pricelist_id']; // Retrieve the pricelist_id from the session
-    $price = $item['price'];
-    $quantity = $item['quantity'];
-    $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
-    $query = "INSERT INTO orderline (order_id, product_id, pricelist_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('iiidii', $order_id, $product_id, $pricelist_id, $price, $quantity, $orderline_status);
-    $stmt->execute();
+    $total_amount += $item['price'] * $item['quantity'];
 }
+
+// Insert into the invoice table
+$query = "INSERT INTO invoice (order_id, customer_id, total_amount, invoice_status) VALUES (?, ?, ?, ?)";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('isdi', $order_id, $_SESSION['user_id'], $total_amount, $invoice_status);
+$stmt->execute();
 
     // Clear the cart session
     unset($_SESSION['cart']);
@@ -367,6 +383,12 @@ foreach ($_SESSION['cart'] as $item) {
                                     <?php echo $item['product_name'] . ' (' . $item['weight'] . ' kgs)'; ?>
                                     <strong class="product-quantity">×
                                         <?php echo $item['quantity']; ?></strong>
+                                    <!-- Add hidden input fields for product_id and pricelist_id -->
+                                    <input type="hidden" name="product_id[]" value="<?php echo $item['product_id']; ?>">
+                                    <input type="hidden" name="pricelist_id[]"
+                                        value="<?php echo $item['pricelist_id']; ?>">
+
+
                                 </td>
                                 <td class="product-total">
                                     <span class="woocommerce-Price-amount amount"><span
