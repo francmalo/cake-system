@@ -1,19 +1,25 @@
 <?php
+// Start the session
+session_start();
+
+// Check if a notification message exists
+if (isset($_SESSION['notification'])) {
+    $notification = $_SESSION['notification'];
+    unset($_SESSION['notification']); // Clear the notification message
+} else {
+    $notification = '';
+}
+
 require_once 'config.php';
 
 if (isset($_GET['id'])) {
-$productId = $_GET['id'];
-
-  
-
-
-
-$sql="SELECT  p.product_name, MAX(p.image_url) AS image_url, c.category_name, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price, p.product_desc
-FROM product p
-JOIN category c ON p.category_id = c.category_id
-LEFT JOIN pricelist pl ON p.product_id = pl.product_id
-WHERE p.product_id = ?
-GROUP BY p.product_name, c.category_name, p.product_desc";
+    $productId = $_GET['id'];
+    $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
+            FROM product p
+            LEFT JOIN category c ON p.category_id = c.category_id
+            LEFT JOIN pricelist pl ON p.product_id = pl.product_id
+            WHERE p.product_id = ?
+            GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $productId);
@@ -22,33 +28,63 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
 
     if ($result->num_rows > 0) {
         $product = $result->fetch_assoc();
+
+        // Prepare and execute the SQL query to fetch the price for the selected weight
+        $weight = isset($_POST['size']) ? $_POST['size'] : null;
+        $stmt_price = $conn->prepare("SELECT pricelist_id, price FROM pricelist WHERE product_id = ? AND (? IS NULL OR weight = ?)");
+        $stmt_price->bind_param("isi", $productId, $weight, $weight);
+        $stmt_price->execute();
+        $result_price = $stmt_price->get_result();
+
+        if ($result_price->num_rows > 0) {
+            $row_price = $result_price->fetch_assoc();
+            $price = $row_price['price'];
+            $pricelistid = $row_price['pricelist_id']; // Fetch the pricelist_id
+
+            // Fetch all sizes (weights) and prices for the product
+            $sql2 = "SELECT pricelist_id, weight, price FROM pricelist WHERE product_id = ? ORDER BY weight";
+            $stmt2 = $conn->prepare($sql2);
+            $stmt2->bind_param("i", $productId);
+            $stmt2->execute();
+            $result2 = $stmt2->get_result();
+
+            $sizes = array();
+
+            while ($row = $result2->fetch_assoc()) {
+                $sizes[$row['weight']] = $row['price'];
+            }
+
+            // Sort the sizes in natural order (e.g., "1kg", "2kg", "10kg")
+            if (!empty($sizes)) {
+                natsort($sizes);
+            }
+
+            $stmt2->close();
+        } else {
+            echo "Price not found for the selected weight.";
+        }
+
+
         
-      // Prepare and execute the SQL query to fetch all weights and prices for the product
-        $sql2 = "SELECT pl.weight, pl.price
-                 FROM pricelist pl
-                 WHERE pl.product_id = ?
-                 ORDER BY pl.weight";
 
-        $stmt2 = $conn->prepare($sql2);
-        $stmt2->bind_param("i", $productId);
-        $stmt2->execute();
-        $result2 = $stmt2->get_result();
+        $stmt_price->close();
+    } else {
+        echo "Product not found.";
+    }
 
-        $sizes = array();
 
-        // Fetch all sizes (weights) and prices for the product
-        while ($row = $result2->fetch_assoc()) {
-            $sizes[$row['weight']] = $row['price'];
-        }
 
-        // Sort the sizes in natural order (e.g., "1kg", "2kg", "10kg")
-        if (!empty($sizes)) {
-            natsort($sizes);
-        }
-        ?>
+    
 
-<!-- Your HTML code to display the product details -->
+    $stmt->close();
+} else {
+    echo "Invalid product ID.";
+}
 
+
+// Close the database connection
+$conn->close();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -110,6 +146,47 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
         border-radius: 4px;
         font-size: 1rem;
     }
+
+    #notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .notification {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        animation: fadeIn 0.3s ease-in-out forwards, fadeOut 3s 3s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
     </style>
 </head>
 
@@ -159,7 +236,7 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
                         <nav class="main-menu navbar-expand-md navbar-light">
                             <div class="collapse navbar-collapse clearfix" id="navbarSupportedContent">
                                 <ul class="navigation menu-left clearfix">
-                                    <li class="dropdown"><a href="index.html">Home</a>
+                                    <li class="dropdown"><a href="index.php">Home</a>
 
                                     </li>
                                     <li class="dropdown"><a href="#">Categories</a>
@@ -182,12 +259,12 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
 
                                 <ul class="navigation menu-right clearfix">
                                     <li class=""><a href="#">Booking</a></li>
-                                    <li class="dropdown current"><a href="shop.html">Shop</a>
+                                    <li class="dropdown current"><a href="shop.php">Shop</a>
                                         <ul>
                                             <li class="current"><a href="shop.html">Shop</a></li>
-                                            <li><a href="shopping-cart.html">Cart</a></li>
-                                            <li><a href="checkout.html">Checkout</a></li>
-                                            <li><a href="login.html">My account</a></li>
+                                            <li><a href="shopping-cart.php">Cart</a></li>
+                                            <li><a href="checkout.php">Checkout</a></li>
+                                            <li><a href="signin.php">My account</a></li>
                                         </ul>
                                     </li>
                                     <li><a href="#contact.html">Contacts</a></li>
@@ -197,36 +274,56 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
                         <!-- Main Menu End-->
 
                         <div class="outer-box clearfix">
-                            <!-- Shoppping Car -->
+                            <!-- Shopping Cart -->
                             <div class="cart-btn">
-                                <a href="shopping-cart.html"><i class="icon flaticon-commerce"></i> <span
-                                        class="count">2</span></a>
+                                <a href="shopping-cart.php"><i class="icon flaticon-commerce"></i> <span class="count">
+                                        <?php
+            // Get the total number of items in the cart
+            $total_items = 0;
+            if (isset($_SESSION['cart'])) {
+                foreach ($_SESSION['cart'] as $item) {
+                    $total_items += $item['quantity'];
+                }
+            }
+            echo $total_items;
+            ?>
+                                    </span></a>
 
                                 <div class="shopping-cart">
                                     <ul class="shopping-cart-items">
-                                        <li class="cart-item">
-                                            <img src="https://via.placeholder.com/300x300" alt="#" class="thumb" />
-                                            <span class="item-name">Birthday Cake</span>
-                                            <span class="item-quantity">1 x <span
-                                                    class="item-amount">$84.00</span></span>
-                                            <a href="shop-single.html" class="product-detail"></a>
-                                            <button class="remove-item"><span class="fa fa-times"></span></button>
-                                        </li>
-
-                                        <li class="cart-item">
-                                            <img src="https://via.placeholder.com/300x300" alt="#" class="thumb" />
-                                            <span class="item-name">French Macaroon</span>
-                                            <span class="item-quantity">1 x <span
-                                                    class="item-amount">$13.00</span></span>
-                                            <a href="shop-single.html" class="product-detail"></a>
-                                            <button class="remove-item"><span class="fa fa-times"></span></button>
-                                        </li>
+                                        <?php
+                // Display the items in the cart
+                if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                    foreach ($_SESSION['cart'] as $item) {
+                        echo '<li class="cart-item">';
+                        echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
+                        echo '<span class="item-name">' . $item['product_name'] . '</span>';
+                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">$' . $item['price'] . '</span></span>';
+                        echo '<a href="shop-single.html" class="product-detail"></a>';
+                        echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
+                        echo '</li>';
+                    }
+                } else {
+                    echo '<li>Your cart is empty.</li>';
+                }
+                ?>
                                     </ul>
 
                                     <div class="cart-footer">
-                                        <div class="shopping-cart-total"><strong>Subtotal:</strong> $97.00</div>
-                                        <a href="cart.html" class="theme-btn">View Cart</a>
-                                        <a href="checkout.html" class="theme-btn">Checkout</a>
+                                        <div class="shopping-cart-total"><strong>Subtotal:</strong>
+                                            <?php
+                    // Calculate the total amount
+                    $total_amount = 0;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            $total_amount += $item['price'] * $item['quantity'];
+                        }
+                    }
+                    echo '$' . $total_amount;
+                    ?>
+                                        </div>
+                                        <a href="shopping-cart.php" class="theme-btn">View Cart</a>
+                                        <!-- <a href="checkout.html" class="theme-btn">Checkout</a> -->
                                     </div>
                                 </div>
                                 <!--end shopping-cart -->
@@ -332,6 +429,13 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
             </div>
         </section>
         <!--End Page Title-->
+        <!-- Notification container -->
+        <div id="notification-container">
+            <?php if (!empty($notification)) : ?>
+            <div class="notification"><?php echo $notification; ?></div>
+            <?php endif; ?>
+        </div>
+
 
         <!--Sidebar Page Container-->
         <div class="sidebar-page-container">
@@ -354,9 +458,19 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
                                                         src="images/products/pic8.jpg" alt=""><span
                                                         class="icon fa fa-search"></span></a></figure> -->
                                             <form method="post" action="add_to_cart.php">
+                                                <!-- hidden values -->
+
                                                 <input type="hidden" name="product_id"
                                                     value="<?php echo $productId; ?>">
+                                                <input type="hidden" name="product_name"
+                                                    value="<?php echo $product['product_name']; ?>">
+                                                <input type="hidden" name="image_url"
+                                                    value="<?php echo $product['image_url']; ?>">
+                                                <input type="hidden" name="product_desc"
+                                                    value="<?php echo $product['product_desc']; ?>">
 
+
+                                                <!-- end hidden values -->
                                                 <figure class="image">
                                                     <a href="<?php echo $product['image_url']; ?>"
                                                         class="lightbox-image"
@@ -385,17 +499,20 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
                                                 <label for="size">Select Size (Weight):</label>
                                                 <select id="size" name="size" class="form-select">
                                                     <?php
-                                                        if (!empty($sizes)) {
-                                                        foreach ($sizes as $weight => $price) {
-                                                            echo '<option value="' . $weight . '">' . $weight . ' kg - Ksh' . $price . '</option>';
-                                                        }
-                                                        } else {
-                                                        echo '<option value="">No sizes available</option>';
-                                                        }
-                                                        ?>
+            if (!empty($sizes)) {
+                foreach ($sizes as $weight => $price) {
+                    echo '<option value="' . $weight . '">' . $weight . ' kg - Ksh' . $price . '</option>';
+                }
+            } else {
+                echo '<option value="">No sizes available</option>';
+            }
+            ?>
                                                 </select>
-                                            </div>
+                                                <!-- Include the hidden input field for pricelist_id here -->
+                                                <input type="hidden" name="pricelistid"
+                                                    value="<?php echo $pricelistid; ?>">
 
+                                            </div>
                                             <div class="cake-message">
                                                 <label for="message">Add a Cake Message:</label>
                                                 <input type="text" id="message" name="message"
@@ -546,14 +663,6 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
 
 
 
-                    <?php
-    } else {
-        echo "Product not found. Check the database for the product with ID: " . $productId;
-    }
-} else {
-    echo "Invalid product ID.";
-}
-?>
 
 
                     <!-- Main Footer -->
@@ -743,6 +852,23 @@ GROUP BY p.product_name, c.category_name, p.product_desc";
 
                     // Set the default price
                     $('#selected-price').text('Price: $' + defaultPrice);
+                });
+
+
+
+
+                // Wait for the DOM to load
+                document.addEventListener('DOMContentLoaded', function() {
+                    var notificationContainer = document.getElementById('notification-container');
+                    var notifications = notificationContainer.getElementsByClassName('notification');
+
+                    // Loop through each notification and add a click event listener
+                    for (var i = 0; i < notifications.length; i++) {
+                        var notification = notifications[i];
+                        notification.addEventListener('click', function() {
+                            this.style.display = 'none'; // Hide the notification on click
+                        });
+                    }
                 });
                 </script>
                 <script src="js/jquery.js"></script>

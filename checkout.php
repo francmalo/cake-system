@@ -94,6 +94,58 @@ $stmt->execute();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
     <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+    <style>
+    /* Delivery Details */
+    .delivery-details {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .delivery-details h3 {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .delivery-details .form-group {
+        margin-bottom: 15px;
+    }
+
+    .delivery-details label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .delivery-details select,
+    .delivery-details textarea,
+    .delivery-details input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 14px;
+    }
+
+    /* Order Button */
+    .payment-box .theme-btn {
+        display: inline-block;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .payment-box .theme-btn:hover {
+        background-color: #0056b3;
+    }
+    </style>
 </head>
 
 <body>
