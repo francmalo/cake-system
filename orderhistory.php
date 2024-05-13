@@ -109,18 +109,89 @@ if ($stmt->execute()) {
         margin-bottom: 10px;
     }
 
-    .btn-primary {
+    .cart-section .table {
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .cart-section .table th,
+    .cart-section .table td {
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .cart-section .custom-btn {
+        background-color: #7C6BFF;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .cart-header th {
+        background-color: white !important;
+        color: black !important;
+        font-weight: bold !important;
+    }
+
+    .cart-section .custom-btn {
+        background-color: #7C6BFF;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .custom-btn {
         padding: 5px 10px;
         font-size: 14px;
     }
 
-    .btn-primary:hover {
-        background-color: #0069d9;
-        border-color: #0062cc;
+
+    .custom-btn {
+        background-color: #7C6BFF;
+        color: white !important;
+        font-weight: bold;
     }
 
-    .btn-primary:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    .cart-table .cart-header th {
+        background-color: white !important;
+        color: black !important;
+        font-weight: bold !important;
+    }
+
+    /* table two */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px;
+        line-height: 1.5;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody+tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    .cart-section .custom-btn {
+        background-color: #7C6BFF;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    .cart-header th {
+        background-color: white !important;
+        color: black !important;
+        font-weight: bold !important;
     }
     </style>
 </head>
@@ -134,87 +205,128 @@ if ($stmt->execute()) {
             <!--Cart Outer-->
             <div class="cart-outer">
                 <div class="table-outer">
-                    <table class="cart-table">
-                        <thead class="cart-header">
-                            <tr>
-                                <th class="product-thumbnail">&nbsp;</th>
-                                <th class="product-name">Order ID</th>
-                                <th class="product-message">Order Date</th>
-                                <th class="product-price">Delivery Date</th>
-                                <th class="product-quantity">Delivery Type</th>
-                                <th class="product-subtotal">Address</th>
-                                <th class="product-remove">Phone</th>
-                                <th class="product-remove">Order Status</th>
-                                <th class="product-remove">Invoice Status</th>
-                                <th class="product-remove">Total Amount</th>
-                                <th class="product-remove">Action</th>
+                    <table class="table">
+                        <thead>
+                            <tr class="cart-header">
+                                <th>#</th>
+                                <th>Order ID</th>
+                                <th>Order Date</th>
+                                <th>Order Status</th>
+                                <th>Invoice Status</th>
+                                <th>Total Amount</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if ($result->num_rows > 0): ?>
                             <?php while ($row = $result->fetch_assoc()): ?>
-                            <tr class="cart-item">
-                                <td class="product-thumbnail">&nbsp;</td>
-                                <td class="product-name"><?php echo $row['order_id']; ?></td>
-                                <td class="product-message"><?php echo $row['order_date']; ?></td>
-                                <td class="product-price"><?php echo $row['delivery_date']; ?></td>
-                                <td class="product-quantity">
-                                    <?php echo ($row['delivery_type'] == 1) ? 'Standard Delivery' : 'Express Delivery'; ?>
+                            <tr>
+                                <th scope="row">&nbsp;</th>
+                                <td><?php echo $row['order_id']; ?></td>
+                                <td><?php echo $row['order_date']; ?></td>
+                                <td>
+                                    <?php
+                $orderStatusLabel = getOrderStatusLabel($row['order_status']);
+                $orderStatusClass = getOrderStatusClass($row['order_status']);
+                echo '<span class="badge rounded-pill ' . $orderStatusClass . '">' . $orderStatusLabel . '</span>';
+                ?>
                                 </td>
-                                <td class="product-subtotal"><?php echo $row['address']; ?></td>
-                                <td class="product-remove"><?php echo $row['phone']; ?></td>
-                                <td class="product-remove"><?php echo getOrderStatusLabel($row['order_status']); ?></td>
-                                <td class="product-remove"><?php echo getInvoiceStatusLabel($row['invoice_status']); ?>
+                                <td>
+                                    <?php
+                $invoiceStatusLabel = getInvoiceStatusLabel($row['invoice_status']);
+                $invoiceStatusClass = getInvoiceStatusClass($row['invoice_status']);
+                echo '<span class="badge rounded-pill ' . $invoiceStatusClass . '">' . $invoiceStatusLabel . '</span>';
+                ?>
                                 </td>
-                                <td class="product-remove">$<?php echo number_format($row['total_amount'], 2); ?></td>
-                                <td class="product-remove">
+                                <td>Ksh<?php echo number_format($row['total_amount'], 2); ?></td>
+                                <td>
                                     <a href="order_details.php?order_id=<?php echo $row['order_id']; ?>"
-                                        class="btn btn-primary">View
-                                        Details</a>
+                                        class="btn custom-btn">View</a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
                             <?php else: ?>
                             <tr>
-                                <td colspan="11" class="text-center">No orders found.</td>
+                                <td colspan="7" class="text-center">No orders found.</td>
                             </tr>
                             <?php endif; ?>
+
                         </tbody>
                     </table>
+
+
                 </div>
+
+
+
+
+
+
+
+
+
+
+
             </div>
         </div>
     </section>
 
     <?php
     // Helper functions to get order status and invoice status labels
-    function getOrderStatusLabel($status)
-    {
-        switch ($status) {
-            case 1:
-                return 'Pending';
-            case 2:
-                return 'Confirmed';
-            case 3:
-                return 'Dispatched';
-            case 4:
-                return 'Delivered';
-            default:
-                return 'Unknown';
-        }
+function getOrderStatusLabel($status)
+{
+    switch ($status) {
+        case 1:
+            return 'Pending';
+        case 2:
+            return 'Confirmed';
+        case 3:
+            return 'Dispatched';
+        case 4:
+            return 'Delivered';
+        default:
+            return 'Unknown';
     }
+}
 
-    function getInvoiceStatusLabel($status)
-    {
-        switch ($status) {
-            case 1:
-                return 'Pending';
-            case 2:
-                return 'Paid';
-            default:
-                return 'Unknown';
-        }
+function getInvoiceStatusLabel($status)
+{
+    switch ($status) {
+        case 1:
+            return 'Pending';
+        case 2:
+            return 'Paid';
+        default:
+            return 'Unknown';
     }
+}
+function getOrderStatusClass($status)
+{
+    switch ($status) {
+        case 1:
+            return 'bg-warning text-dark';
+        case 2:
+            return 'bg-info text-dark';
+        case 3:
+            return 'bg-primary';
+        case 4:
+            return 'bg-success';
+        default:
+            return 'bg-secondary';
+    }
+}
+
+function getInvoiceStatusClass($status)
+{
+    switch ($status) {
+        case 1:
+            return 'bg-warning text-dark';
+        case 2:
+            return 'bg-success';
+        default:
+            return 'bg-secondary';
+    }
+}
     ?>
 
     <script src="js/jquery.js"></script>

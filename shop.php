@@ -83,7 +83,7 @@ $html .= '
                 <span class="fa fa-star"></span>
                 <span class="fa fa-star light"></span>
             </div>
-            <div class="price">$' . $product['min_price'] . '</div>
+            <div class="price">Ksh' . $product['min_price'] . '</div>
         </div>
     </div>
 </div>
