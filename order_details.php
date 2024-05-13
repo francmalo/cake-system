@@ -29,10 +29,10 @@ $order = $result->fetch_assoc();
 $query = "SELECT ol.orderline_id, ol.product_id, p.product_name, ol.pricelist_id, pl.weight, ol.price, ol.custom_desc, ol.quantity
           FROM orderline ol
           JOIN product p ON ol.product_id = p.product_id
-          JOIN pricelist pl ON ol.pricelist_id = pl.pricelist_id
+          JOIN pricelist pl ON ol.pricelist_id = pl.pricelist_id AND ol.order_id = ?
           WHERE ol.order_id = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $order_id);
+$stmt->bind_param("ii", $order_id, $order_id);
 $stmt->execute();
 $orderline_result = $stmt->get_result();
 ?>
@@ -111,6 +111,7 @@ $orderline_result = $stmt->get_result();
             <tr>
                 <td><?php echo $orderline['product_name']; ?></td>
                 <td><?php echo $orderline['weight']; ?></td>
+
                 <td><?php echo $orderline['price']; ?></td>
                 <td><?php echo $orderline['custom_desc']; ?></td>
                 <td><?php echo $orderline['quantity']; ?></td>

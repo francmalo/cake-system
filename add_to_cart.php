@@ -12,6 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $pricelist_id = $_POST['pricelistid']; // Get the pricelist_id from the form
     $message = $_POST['message'];
     $quantity = $_POST['quantity'];
+    
+    // Debug statements
+    echo "Product IDs: ";
+    print_r($product_id);
+    echo "Pricelist IDs: ";
+    print_r($pricelist_id);
+    // ...
+
 
     // Connect to the database
     require_once 'config.php';

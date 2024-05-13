@@ -303,7 +303,7 @@ $conn->close();
                         echo '<li class="cart-item">';
                         echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
                         echo '<span class="item-name">' . $item['product_name'] . '</span>';
-                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">$' . $item['price'] . '</span></span>';
+                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">Ksh' . $item['price'] . '</span></span>';
                         echo '<a href="shop-single.html" class="product-detail"></a>';
                         echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
                         echo '</li>';
@@ -324,7 +324,7 @@ $conn->close();
                             $total_amount += $item['price'] * $item['quantity'];
                         }
                     }
-                    echo '$' . $total_amount;
+                    echo 'Ksh' . $total_amount;
                     ?>
                                         </div>
                                         <a href="shopping-cart.php" class="theme-btn">View Cart</a>
@@ -425,11 +425,14 @@ $conn->close();
         <!--Page Title-->
         <section class="page-title" style="background-image:url(images/bg/bnr2.jpg)">
             <div class="auto-container">
-                <h1>Birthday Cake</h1>
+                <h1>Product</h1>
                 <ul class="page-breadcrumb">
-                    <li><a href="index.html">home</a></li>
-                    <li><a href="shop.html">Products</a></li>
-                    <li>Birthday Cake</li>
+                    <ul class="page-breadcrumb">
+                        <li><a href="index.php">home</a></li>
+                        <li><a href="shop.php">Products</a></li>
+
+                    </ul>
+
                 </ul>
             </div>
         </section>

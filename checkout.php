@@ -27,6 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $product_ids = $_POST['product_id']; // Retrieve the product_id array
     $pricelist_ids = $_POST['pricelist_id']; // Retrieve the pricelist_id array
 
+
+    // Debug statements
+    echo "Product IDs: ";
+    print_r($product_ids);
+    echo "Pricelist IDs: ";
+    print_r($pricelist_ids);
+    // ...
+
     // Insert into the orders table
     $order_date = date('Y-m-d H:i:s');
     $delivery_date = date('Y-m-d'); // Assuming you want to set the delivery date to the current date
@@ -40,20 +48,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $stmt->insert_id;
 
 // Insert into the orderline table
- // Insert into the orderline table
-    $index = 0;
-    foreach ($_SESSION['cart'] as $item) {
-        $product_id = $product_ids[$index]; // Use the submitted product_id
-        $pricelist_id = $pricelist_ids[$index]; // Use the submitted pricelist_id
-        $price = $item['price'];
-        $quantity = $item['quantity'];
-        $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
-        $query = "INSERT INTO orderline (order_id, product_id, pricelist_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('iiidii', $order_id, $product_id, $pricelist_id, $price, $quantity, $orderline_status);
-        $stmt->execute();
-        $index++;
+ // Insert into the orderline table// Insert into the orderline table
+$index = 0;
+foreach ($_SESSION['cart'] as $item) {
+    $product_id = $product_ids[$index]; // Use the submitted product_id
+    $pricelist_id = $pricelist_ids[$index]; // Use the submitted pricelist_id
+    $price = $item['price'];
+    $quantity = $item['quantity'];
+    $orderline_status = 1; // Set a default orderline status (e.g., 1 for pending)
+    $query = "INSERT INTO orderline (order_id, product_id, pricelist_id, price, quantity, orderline_status) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
     }
+    $stmt->bind_param('iiidii', $order_id, $product_id, $pricelist_id, $price, $quantity, $orderline_status);
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+    }
+    $index++;
+}
     // Calculate the total amount
 $total_amount = 0;
 foreach ($_SESSION['cart'] as $item) {
@@ -430,17 +443,15 @@ $stmt->execute();
                         </thead>
                         <tbody>
                             <?php foreach ($_SESSION['cart'] as $item): ?>
+                            <?php if (isset($item['product_name']) && isset($item['weight']) && isset($item['product_id']) && isset($item['pricelist_id'])): ?>
                             <tr class="cart-item">
                                 <td class="product-name">
                                     <?php echo $item['product_name'] . ' (' . $item['weight'] . ' kgs)'; ?>
                                     <strong class="product-quantity">×
                                         <?php echo $item['quantity']; ?></strong>
-                                    <!-- Add hidden input fields for product_id and pricelist_id -->
                                     <input type="hidden" name="product_id[]" value="<?php echo $item['product_id']; ?>">
                                     <input type="hidden" name="pricelist_id[]"
                                         value="<?php echo $item['pricelist_id']; ?>">
-
-
                                 </td>
                                 <td class="product-total">
                                     <span class="woocommerce-Price-amount amount"><span
@@ -449,6 +460,7 @@ $stmt->execute();
                                     </span>
                                 </td>
                             </tr>
+                            <?php endif; ?>
                             <?php endforeach; ?>
 
 
