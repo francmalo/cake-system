@@ -805,27 +805,58 @@ $conn->close();
 
 
                 <script>
-                $(document).ready(function() {
-                    var sizes = <?php echo !empty($sizes) ? json_encode($sizes) : 'null'; ?>;
-                    var defaultPrice = <?php echo !empty($sizes) ? reset($sizes) : 0; ?>;
+                // $(document).ready(function() {
+                //             var sizes = <php echo !empty($sizes) ? json_encode($sizes) : 'null'; ?>;
+                //             var defaultPrice = <php echo !empty($sizes) ? reset($sizes) : 0; ?>;
 
-                    $('#size').on('change', function() {
-                        var selectedWeight = $(this).val();
-                        var price = (sizes && sizes[selectedWeight]) || 0;
-                        $('#selected-price').text('Price: $' + price);
+                //             $('#size').on('change', function() {
+                //                 var selectedWeight = $(this).val();
+                //                 var price = (sizes && sizes[selectedWeight]) || 0;
+                //                 $('#selected-price').text('Price: $' + price);
+                //             });
+
+                // Set the default price
+                //     $('#selected-price').text('Price: $' + defaultPrice);
+                // });
+
+
+                // pricelist id
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM Content Loaded');
+                    var sizeSelect = document.getElementById('size');
+                    console.log('Size Select:', sizeSelect);
+                    var pricelistIdInput = document.querySelector('input[name="pricelistid"]');
+                    console.log('Pricelist ID Input:', pricelistIdInput);
+
+                    sizeSelect.addEventListener('change', function() {
+                        var selectedWeight = this.value;
+                        console.log('Selected Weight:', selectedWeight);
+                        var sizes = <?php echo json_encode($sizes); ?>;
+                        console.log('Sizes:', sizes);
+
+                        for (var weight in sizes) {
+                            console.log('Checking Weight:', weight);
+                            if (weight == selectedWeight) {
+                                var pricelistId = Object.keys(sizes).find(key => sizes[
+                                    key] === sizes[
+                                    weight]);
+                                console.log('Found Pricelist ID:', pricelistId);
+                                pricelistIdInput.value = pricelistId;
+                                console.log('Pricelist ID updated to:', pricelistId);
+                                break;
+                            }
+                        }
                     });
-
-                    // Set the default price
-                    $('#selected-price').text('Price: $' + defaultPrice);
                 });
-
 
 
 
                 // Wait for the DOM to load
                 document.addEventListener('DOMContentLoaded', function() {
                     var notificationContainer = document.getElementById('notification-container');
-                    var notifications = notificationContainer.getElementsByClassName('notification');
+                    var notifications = notificationContainer.getElementsByClassName(
+                        'notification');
 
                     // Loop through each notification and add a click event listener
                     for (var i = 0; i < notifications.length; i++) {

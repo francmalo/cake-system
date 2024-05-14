@@ -14,13 +14,14 @@ require_once 'config.php';
 
 if (isset($_GET['id'])) {
     $productId = $_GET['id'];
-    $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
+
+    // sql1
+    $sql = "SELECT p.product_name, p.image_url, c.category_name, p.product_desc, p.category_id, MIN(pl.weight) AS min_weight, MIN(pl.price) AS min_price
             FROM product p
             LEFT JOIN category c ON p.category_id = c.category_id
             LEFT JOIN pricelist pl ON p.product_id = pl.product_id
             WHERE p.product_id = ?
-            GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc";
-
+            GROUP BY p.product_name, p.image_url, c.category_name, p.product_desc, p.category_id";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $productId);
     $stmt->execute();
@@ -39,22 +40,20 @@ if (isset($_GET['id'])) {
         if ($result_price->num_rows > 0) {
             $row_price = $result_price->fetch_assoc();
             $price = $row_price['price'];
-            $pricelistid = $row_price['pricelist_id']; // Fetch the pricelist_id
+            $pricelistid = $row_price['pricelist_id'];
 
-            // Fetch all sizes (weights) and prices for the product
+            // sql2
             $sql2 = "SELECT pricelist_id, weight, price FROM pricelist WHERE product_id = ? ORDER BY weight";
             $stmt2 = $conn->prepare($sql2);
             $stmt2->bind_param("i", $productId);
             $stmt2->execute();
             $result2 = $stmt2->get_result();
-
             $sizes = array();
 
             while ($row = $result2->fetch_assoc()) {
                 $sizes[$row['weight']] = $row['price'];
             }
 
-            // Sort the sizes in natural order (e.g., "1kg", "2kg", "10kg")
             if (!empty($sizes)) {
                 natsort($sizes);
             }
@@ -64,23 +63,29 @@ if (isset($_GET['id'])) {
             echo "Price not found for the selected weight.";
         }
 
-
-        
-
         $stmt_price->close();
+
+        // sql3
+        $currentCategoryId = $product['category_id'];
+       $sql3 = "SELECT p.product_id, p.product_name, p.image_url, MIN(pl.price) AS price
+         FROM product p
+         INNER JOIN pricelist pl ON p.product_id = pl.product_id
+         WHERE p.category_id = ? AND p.product_id != ?
+         GROUP BY p.product_id, p.product_name, p.image_url
+         ORDER BY p.product_name
+         LIMIT 3";
+$stmt3 = $conn->prepare($sql3);
+$stmt3->bind_param("ii", $currentCategoryId, $productId);
+$stmt3->execute();
+$relatedProducts = $stmt3->get_result();
     } else {
         echo "Product not found.";
     }
-
-
-
-    
 
     $stmt->close();
 } else {
     echo "Invalid product ID.";
 }
-
 
 // Close the database connection
 $conn->close();
@@ -298,7 +303,7 @@ $conn->close();
                         echo '<li class="cart-item">';
                         echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
                         echo '<span class="item-name">' . $item['product_name'] . '</span>';
-                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">$' . $item['price'] . '</span></span>';
+                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">Ksh' . $item['price'] . '</span></span>';
                         echo '<a href="shop-single.html" class="product-detail"></a>';
                         echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
                         echo '</li>';
@@ -319,7 +324,7 @@ $conn->close();
                             $total_amount += $item['price'] * $item['quantity'];
                         }
                     }
-                    echo '$' . $total_amount;
+                    echo 'Ksh' . $total_amount;
                     ?>
                                         </div>
                                         <a href="shopping-cart.php" class="theme-btn">View Cart</a>
@@ -420,11 +425,14 @@ $conn->close();
         <!--Page Title-->
         <section class="page-title" style="background-image:url(images/bg/bnr2.jpg)">
             <div class="auto-container">
-                <h1>Birthday Cake</h1>
+                <h1>Product</h1>
                 <ul class="page-breadcrumb">
-                    <li><a href="index.html">home</a></li>
-                    <li><a href="shop.html">Products</a></li>
-                    <li>Birthday Cake</li>
+                    <ul class="page-breadcrumb">
+                        <li><a href="index.php">home</a></li>
+                        <li><a href="shop.php">Products</a></li>
+
+                    </ul>
+
                 </ul>
             </div>
         </section>
@@ -581,81 +589,38 @@ $conn->close();
                                 </div>
                                 <!--End Product Info Tabs-->
 
-                                <!-- Related Products -->
+
                                 <div class="related-products">
                                     <div class="sec-title">
                                         <h2>Related products</h2>
                                     </div>
 
                                     <div class="row clearfix">
-                                        <!-- Shop Item -->
-                                        <div class="shop-item col-lg-4 col-md-6 col-sm-12">
-                                            <div class="inner-box">
-                                                <div class="image-box">
-                                                    <div class="sale-tag">sale!</div>
-                                                    <figure class="image"><a href="shop-single.html"><img
-                                                                src="images/products/pic1.jpg" alt=""></a></figure>
-                                                    <div class="btn-box"><a href="shopping-cart.html">Add to cart</a>
-                                                    </div>
-                                                </div>
-                                                <div class="lower-content">
-                                                    <h4 class="name"><a href="shop-single.html">Lemon Cake</a></h4>
-                                                    <div class="rating"><span class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span>
-                                                    </div>
-                                                    <div class="price">$17.00</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Shop Item -->
-                                        <div class="shop-item col-lg-4 col-md-6 col-sm-12">
-                                            <div class="inner-box">
-                                                <div class="image-box">
-                                                    <figure class="image"><a href="shop-single.html"><img
-                                                                src="images/products/pic2.jpg" alt=""></a></figure>
-                                                    <div class="btn-box"><a href="shopping-cart.html">Add to cart</a>
-                                                    </div>
-                                                </div>
-                                                <div class="lower-content">
-                                                    <h4 class="name"><a href="shop-single.html">Coffee Cake</a></h4>
-                                                    <div class="rating"><span class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span>
-                                                    </div>
-                                                    <div class="price">$35.00</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Shop Item -->
-                                        <div class="shop-item col-lg-4 col-md-6 col-sm-12">
-                                            <div class="inner-box">
-                                                <div class="image-box">
-                                                    <figure class="image"><a href="shop-single.html"><img
-                                                                src="images/products/pic6.jpg" alt=""></a></figure>
-                                                    <div class="btn-box"><a href="shopping-cart.html">Add to cart</a>
-                                                    </div>
-                                                </div>
-                                                <div class="lower-content">
-                                                    <h4 class="name"><a href="shop-single.html">Candy Cake</a></h4>
-                                                    <div class="rating"><span class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star"></span><span
-                                                            class="fa fa-star light"></span>
-                                                    </div>
-                                                    <div class="price">$17.00</div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <?php
+        if ($relatedProducts->num_rows > 0) {
+            while ($product = $relatedProducts->fetch_assoc()) {
+                // Display the related product details
+                echo '<div class="shop-item col-lg-4 col-md-6 col-sm-12">
+                        <div class="inner-box">
+                            <div class="image-box">
+                                <figure class="image">
+                                    <a href="shop-single.php?id=' . $product['product_id'] . '">
+                                        <img src="' . $product['image_url'] . '" alt="">
+                                    </a>
+                                </figure>
+                                <div class="btn-box"><a href="shop-single.php">View Product</a></div>
+                            </div>
+                            <div class="lower-content">
+                                <h4 class="name"><a href="shop-single.php?id=' . $product['product_id'] . '">' . $product['product_name'] . '</a></h4>
+                                <div class="price">Ksh ' . $product['price'] . '</div>
+                            </div>
+                        </div>
+                    </div>';
+            }
+        }
+        ?>
                                     </div>
-                                </div><!-- End Related Products -->
+                                </div>
                             </div><!-- Product Detail -->
                         </div><!-- End Shop Single -->
                     </div>

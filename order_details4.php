@@ -38,11 +38,9 @@ $orderline_result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -52,6 +50,7 @@ $orderline_result = $stmt->get_result();
         background-color: #f8f9fa;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
 
     .table th,
     .table td {
@@ -138,14 +137,6 @@ $orderline_result = $stmt->get_result();
         max-width: 1200px;
         margin: auto;
     }
-
-    @media (max-width: 767.98px) {
-        .table-responsive-sm {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            -ms-overflow-style: -ms-autohiding-scrollbar;
-        }
-    }
     </style>
 </head>
 
@@ -227,38 +218,32 @@ $orderline_result = $stmt->get_result();
 
         <div class="order-items">
             <h3>Order Items</h3>
-            <div class="table-responsive-sm">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Weight</th>
-                            <th>Price</th>
-                            <th>Custom Description</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($orderline = $orderline_result->fetch_assoc()): ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="<?php echo $orderline['image_url']; ?>"
-                                        alt="<?php echo $orderline['product_name']; ?>" class="product-image me-3">
-                                    <div><?php echo $orderline['product_name']; ?></div>
-                                </div>
-                            </td>
-                            <td><?php echo $orderline['weight']; ?></td>
-                            <td><?php echo $orderline['price']; ?></td>
-                            <td><?php echo $orderline['custom_desc']; ?></td>
-                            <td><?php echo $orderline['quantity']; ?></td>
-                            <td><?php echo $orderline['price'] * $orderline['quantity']; ?></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Weight</th>
+                        <th>Price</th>
+                        <th>Custom Description</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($orderline = $orderline_result->fetch_assoc()): ?>
+                    <tr>
+                        <td><img src="<?php echo $orderline['image_url']; ?>"
+                                alt="<?php echo $orderline['product_name']; ?>" class="product-image"></td>
+                        <td><?php echo $orderline['product_name']; ?></td>
+                        <td><?php echo $orderline['weight']; ?></td>
+                        <td><?php echo $orderline['price']; ?></td>
+                        <td><?php echo $orderline['custom_desc']; ?></td>
+                        <td><?php echo $orderline['quantity']; ?></td>
+                        <td><?php echo $orderline['price'] * $orderline['quantity']; ?></td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </div>
 
 
@@ -267,35 +252,35 @@ $orderline_result = $stmt->get_result();
         <?php endif; ?>
 
         <?php
-    // Helper functions to get order status and invoice status labels
-    function getOrderStatusLabel($status)
-    {
-        switch ($status) {
-            case 1:
-                return 'Pending';
-            case 2:
-                return 'Confirmed';
-            case 3:
-                return 'Dispatched';
-            case 4:
-                return 'Delivered';
-            default:
-                return 'Unknown';
+        // Helper functions to get order status and invoice status labels
+        function getOrderStatusLabel($status)
+        {
+            switch ($status) {
+                case 1:
+                    return 'Pending';
+                case 2:
+                    return 'Confirmed';
+                case 3:
+                    return 'Dispatched';
+                case 4:
+                    return 'Delivered';
+                default:
+                    return 'Unknown';
+            }
         }
-    }
 
-    function getInvoiceStatusLabel($status)
-    {
-        switch ($status) {
-            case 1:
-                return 'Pending';
-            case 2:
-                return 'Paid';
-            default:
-                return 'Unknown';
+        function getInvoiceStatusLabel($status)
+        {
+            switch ($status) {
+                case 1:
+                    return 'Pending';
+                case 2:
+                    return 'Paid';
+                default:
+                    return 'Unknown';
+            }
         }
-    }
-    ?>
+        ?>
     </div>
 </body>
 
