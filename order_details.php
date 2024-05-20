@@ -154,12 +154,15 @@ $orderline_result = $stmt->get_result();
         margin: auto;
     }
 
+
     @media (max-width: 767.98px) {
         .table-responsive-sm {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             -ms-overflow-style: -ms-autohiding-scrollbar;
         }
+
+
     }
     </style>
 </head>
