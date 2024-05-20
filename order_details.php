@@ -41,9 +41,24 @@ $orderline_result = $stmt->get_result();
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details</title>
+    <meta charset="utf-8">
+    <title>Bellaria - a Delicious Cakes and Bakery HTML Template | Shop Single</title>
+
+    <!-- Stylesheets -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/responsive.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+    <!-- Responsive -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+    <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
@@ -149,6 +164,245 @@ $orderline_result = $stmt->get_result();
     </style>
 </head>
 
+<!-- Preloader -->
+<div class="preloader">
+    <div class="loader_overlay"></div>
+    <div class="loader_cogs">
+        <div class="loader_cogs__top">
+            <div class="top_part"></div>
+            <div class="top_part"></div>
+            <div class="top_part"></div>
+            <div class="top_hole"></div>
+        </div>
+        <div class="loader_cogs__left">
+            <div class="left_part"></div>
+            <div class="left_part"></div>
+            <div class="left_part"></div>
+            <div class="left_hole"></div>
+        </div>
+        <div class="loader_cogs__bottom">
+            <div class="bottom_part"></div>
+            <div class="bottom_part"></div>
+            <div class="bottom_part"></div>
+            <div class="bottom_hole"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Header-->
+<header class="main-header">
+    <!-- Menu Wave -->
+    <div class="menu_wave"></div>
+
+    <!-- Main box -->
+    <div class="main-box">
+        <div class="menu-box">
+            <div class="logo"><a href="index.html"><img src="images/logo-22.png" alt="" title=""></a></div>
+
+
+            <!--Nav Box-->
+            <div class="nav-outer clearfix">
+                <!-- Main Menu -->
+                <nav class="main-menu navbar-expand-md navbar-light">
+                    <div class="collapse navbar-collapse clearfix" id="navbarSupportedContent">
+                        <ul class="navigation menu-left clearfix">
+                            <li class="dropdown"><a href="index.php">Home</a>
+
+                            </li>
+                            <li class="dropdown"><a href="#">Categories</a>
+                                <ul>
+                                    <li><a href="#">Wedding</a></li>
+                                    <li><a href="#">Birthday</a></li>
+                                    <li><a href="#">Annivesery</a></li>
+                                    <li><a href="#">Graduation</a></li>
+                                    <li><a href="#">Other</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown"><a href="#">Links</a>
+                                <ul>
+                                    <li><a href="#">About Us</a></li>
+                                    <li><a href="#">Our Services</a></li>
+                                    <li><a href="#">FAQs</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <ul class="navigation menu-right clearfix">
+                            <li class=""><a href="#">Booking</a></li>
+                            <li class="dropdown current"><a href="shop.php">Shop</a>
+                                <ul>
+                                    <li class="current"><a href="shop.html">Shop</a></li>
+                                    <li><a href="shopping-cart.php">Cart</a></li>
+                                    <li><a href="checkout.php">Checkout</a></li>
+                                    <li><a href="signin.php">My account</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#contact.html">Contacts</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Main Menu End-->
+
+                <div class="outer-box clearfix">
+                    <!-- Shopping Cart -->
+                    <div class="cart-btn">
+                        <a href="shopping-cart.php"><i class="icon flaticon-commerce"></i> <span class="count">
+                                <?php
+            // Get the total number of items in the cart
+            $total_items = 0;
+            if (isset($_SESSION['cart'])) {
+                foreach ($_SESSION['cart'] as $item) {
+                    $total_items += $item['quantity'];
+                }
+            }
+            echo $total_items;
+            ?>
+                            </span></a>
+
+                        <div class="shopping-cart">
+                            <ul class="shopping-cart-items">
+                                <?php
+                // Display the items in the cart
+                if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                    foreach ($_SESSION['cart'] as $item) {
+                        echo '<li class="cart-item">';
+                        echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
+                        echo '<span class="item-name">' . $item['product_name'] . '</span>';
+                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">Ksh' . $item['price'] . '</span></span>';
+                        echo '<a href="shop-single.html" class="product-detail"></a>';
+                        echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
+                        echo '</li>';
+                    }
+                } else {
+                    echo '<li>Your cart is empty.</li>';
+                }
+                ?>
+                            </ul>
+
+                            <div class="cart-footer">
+                                <div class="shopping-cart-total"><strong>Subtotal:</strong>
+                                    <?php
+                    // Calculate the total amount
+                    $total_amount = 0;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            $total_amount += $item['price'] * $item['quantity'];
+                        }
+                    }
+                    echo 'Ksh' . $total_amount;
+                    ?>
+                                </div>
+                                <a href="shopping-cart.php" class="theme-btn">View Cart</a>
+                                <!-- <a href="checkout.html" class="theme-btn">Checkout</a> -->
+                            </div>
+                        </div>
+                        <!--end shopping-cart -->
+                    </div>
+
+                    <!-- Search Btn -->
+                    <div class="search-box">
+                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Header  -->
+    <div class="sticky-header">
+        <div class="auto-container clearfix">
+            <!--Logo-->
+            <div class="logo">
+                <a href="#" title="Sticky Logo"><img src="images/logo-small.png" alt="Sticky Logo"></a>
+            </div>
+
+            <!--Right Col-->
+            <div class="nav-outer">
+                <!--Mobile Navigation Toggler-->
+                <div class="mobile-nav-toggler"><span class="icon flaticon-menu"></span></div>
+
+                <!-- Main Menu -->
+                <nav class="main-menu">
+                    <!--Keep This Empty / Menu will come through Javascript-->
+                </nav><!-- Main Menu End-->
+            </div>
+        </div>
+    </div><!-- End Sticky Menu -->
+
+    <!-- Sticky Header  -->
+    <div class="sticky-header">
+        <div class="auto-container clearfix">
+            <!--Logo-->
+            <div class="logo">
+                <a href="#" title="Sticky Logo"><img src="images/logo-small.png" alt="Sticky Logo"></a>
+            </div>
+
+            <!--Right Col-->
+            <div class="nav-outer">
+                <!--Mobile Navigation Toggler-->
+                <div class="mobile-nav-toggler"><span class="icon flaticon-menu"></span></div>
+
+                <!-- Main Menu -->
+                <nav class="main-menu">
+                    <!--Keep This Empty / Menu will come through Javascript-->
+                </nav><!-- Main Menu End-->
+            </div>
+        </div>
+    </div><!-- End Sticky Menu -->
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="logo"><a href="index.html"><img src="images/logo-small.png" alt="" title=""></a></div>
+
+        <!--Nav Box-->
+        <div class="nav-outer clearfix">
+            <!--Keep This Empty / Menu will come through Javascript-->
+        </div>
+    </div>
+
+    <!-- Mobile Menu  -->
+    <div class="mobile-menu">
+        <nav class="menu-box">
+            <div class="nav-logo"><a href="index.html"><img src="images/logo-small.png" alt="" title=""></a>
+            </div>
+            <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
+        </nav>
+    </div><!-- End Mobile Menu -->
+
+    <!-- Header Search -->
+    <div class="search-popup">
+        <span class="search-back-drop"></span>
+
+        <div class="search-inner">
+            <button class="close-search"><span class="fa fa-times"></span></button>
+            <form method="post" action="blog-showcase.html">
+                <div class="form-group">
+                    <input type="search" name="search-field" value="" placeholder="Search..." required="">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Header Search -->
+</header>
+<!--End Main Header -->
+
+<!--Page Title-->
+<section class="page-title" style="background-image:url(images/bg/bnr2.jpg)">
+    <div class="auto-container">
+        <h1>Order Details</h1>
+        <ul class="page-breadcrumb">
+            <ul class="page-breadcrumb">
+                <li><a href="index.php">home</a></li>
+                <li><a href="shop.php">Products</a></li>
+
+            </ul>
+
+        </ul>
+    </div>
+</section>
+
+
 <body>
     <div class="container">
         <h1 class="text-center mb-4">Order Details</h1>
@@ -183,6 +437,43 @@ $orderline_result = $stmt->get_result();
             </div>
         </div>
         <?php if ($order): ?>
+        <div class="order-items">
+            <h3>Order Items</h3>
+            <div class="table-responsive-sm">
+                <table class="table ">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Weight</th>
+                            <th>Price</th>
+                            <th>Custom Description</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($orderline = $orderline_result->fetch_assoc()): ?>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="<?php echo $orderline['image_url']; ?>"
+                                        alt="<?php echo $orderline['product_name']; ?>" class="product-image me-3">
+                                    <div><?php echo $orderline['product_name']; ?></div>
+                                </div>
+                            </td>
+                            <td><?php echo $orderline['weight']; ?></td>
+                            <td><?php echo $orderline['price']; ?></td>
+                            <td><?php echo $orderline['custom_desc']; ?></td>
+                            <td><?php echo $orderline['quantity']; ?></td>
+                            <td><?php echo $orderline['price'] * $orderline['quantity']; ?></td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
         <div class="order-details">
             <h3>Order Information</h3>
             <table class="table table-borderless">
@@ -225,41 +516,6 @@ $orderline_result = $stmt->get_result();
             </table>
         </div>
 
-        <div class="order-items">
-            <h3>Order Items</h3>
-            <div class="table-responsive-sm">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Weight</th>
-                            <th>Price</th>
-                            <th>Custom Description</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($orderline = $orderline_result->fetch_assoc()): ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="<?php echo $orderline['image_url']; ?>"
-                                        alt="<?php echo $orderline['product_name']; ?>" class="product-image me-3">
-                                    <div><?php echo $orderline['product_name']; ?></div>
-                                </div>
-                            </td>
-                            <td><?php echo $orderline['weight']; ?></td>
-                            <td><?php echo $orderline['price']; ?></td>
-                            <td><?php echo $orderline['custom_desc']; ?></td>
-                            <td><?php echo $orderline['quantity']; ?></td>
-                            <td><?php echo $orderline['price'] * $orderline['quantity']; ?></td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
 
         <?php else: ?>
@@ -297,6 +553,18 @@ $orderline_result = $stmt->get_result();
     }
     ?>
     </div>
+
+    <script src="js/jquery.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.fancybox.js"></script>
+    <script src="js/owl.js"></script>
+    <script src="js/wow.js"></script>
+    <script src="js/appear.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/sticky_sidebar.min.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

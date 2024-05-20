@@ -76,13 +76,6 @@ $html .= '
             <h4 class="name"><a href="shop-single.php?id=' . $product['product_id'] . '">' .
                     $product['product_name'] . '</a></h4>
 
-            <div class="rating">
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star light"></span>
-            </div>
             <div class="price">Ksh' . $product['min_price'] . '</div>
         </div>
     </div>

@@ -114,6 +114,21 @@ $conn->close();
 
 
     <style>
+    /* .cart-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .cart-buttons {
+        display: flex;
+    }
+
+    .cart-buttons .theme-btn {
+        margin-left: 10px;
+    } */
+
     .size-options {
         display: flex;
         flex-direction: column;
@@ -281,51 +296,52 @@ $conn->close();
                         <div class="outer-box clearfix">
                             <!-- Shopping Cart -->
                             <div class="cart-btn">
-                                <a href="shopping-cart.php"><i class="icon flaticon-commerce"></i> <span class="count">
+                                <a href="#" class="cart-icon"><i class="icon flaticon-commerce"></i> <span
+                                        class="count">
                                         <?php
-            // Get the total number of items in the cart
-            $total_items = 0;
-            if (isset($_SESSION['cart'])) {
-                foreach ($_SESSION['cart'] as $item) {
-                    $total_items += $item['quantity'];
-                }
+        // Get the total number of items in the cart
+        $total_items = 0;
+        if (isset($_SESSION['cart'])) {
+            foreach ($_SESSION['cart'] as $item) {
+                $total_items += $item['quantity'];
             }
-            echo $total_items;
-            ?>
+        }
+        echo $total_items;
+        ?>
                                     </span></a>
 
                                 <div class="shopping-cart">
                                     <ul class="shopping-cart-items">
                                         <?php
-                // Display the items in the cart
-                if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-                    foreach ($_SESSION['cart'] as $item) {
-                        echo '<li class="cart-item">';
-                        echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
-                        echo '<span class="item-name">' . $item['product_name'] . '</span>';
-                        echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">Ksh' . $item['price'] . '</span></span>';
-                        echo '<a href="shop-single.html" class="product-detail"></a>';
-                        echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
-                        echo '</li>';
-                    }
-                } else {
-                    echo '<li>Your cart is empty.</li>';
+            // Display the items in the cart
+            if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                foreach ($_SESSION['cart'] as $item) {
+                    echo '<li class="cart-item">';
+                    echo '<img src="' . $item['image_url'] . '" alt="#" class="thumb" />';
+                    echo '<span class="item-name">' . $item['product_name'] . '</span>';
+                    echo '<span class="item-quantity">' . $item['quantity'] . ' x <span class="item-amount">Ksh' . $item['price'] . '</span></span>';
+                    echo '<a href="shop-single.html" class="product-detail"></a>';
+                    echo '<button class="remove-item"><span class="fa fa-times"></span></button>';
+                    echo '</li>';
                 }
-                ?>
+            } else {
+                  echo '<li class="cart-empty">Your cart is empty.</li>';
+            }
+            ?>
                                     </ul>
 
                                     <div class="cart-footer">
                                         <div class="shopping-cart-total"><strong>Subtotal:</strong>
                                             <?php
-                    // Calculate the total amount
-                    $total_amount = 0;
-                    if (isset($_SESSION['cart'])) {
-                        foreach ($_SESSION['cart'] as $item) {
-                            $total_amount += $item['price'] * $item['quantity'];
-                        }
+                // Calculate the total amount
+                $total_amount = 0;
+                if (isset($_SESSION['cart'])) {
+                    foreach ($_SESSION['cart'] as $item) {
+                        $total_amount += $item['price'] * $item['quantity'];
                     }
-                    echo 'Ksh' . $total_amount;
-                    ?>
+                }
+                echo 'Ksh' . $total_amount;
+                ?>
                                         </div>
                                         <a href="shopping-cart.php" class="theme-btn">View Cart</a>
                                         <!-- <a href="checkout.html" class="theme-btn">Checkout</a> -->
@@ -805,21 +821,6 @@ $conn->close();
 
 
                 <script>
-                // $(document).ready(function() {
-                //             var sizes = <php echo !empty($sizes) ? json_encode($sizes) : 'null'; ?>;
-                //             var defaultPrice = <php echo !empty($sizes) ? reset($sizes) : 0; ?>;
-
-                //             $('#size').on('change', function() {
-                //                 var selectedWeight = $(this).val();
-                //                 var price = (sizes && sizes[selectedWeight]) || 0;
-                //                 $('#selected-price').text('Price: $' + price);
-                //             });
-
-                // Set the default price
-                //     $('#selected-price').text('Price: $' + defaultPrice);
-                // });
-
-
                 // pricelist id
 
                 document.addEventListener('DOMContentLoaded', function() {
@@ -865,6 +866,30 @@ $conn->close();
                             this.style.display = 'none'; // Hide the notification on click
                         });
                     }
+                });
+
+
+
+                $(document).ready(function() {
+                    // Add click event listener to the "Add To Cart" button
+                    $(".add-to-cart").click(function(e) {
+                        e.preventDefault(); // Prevent the default form submission
+
+                        // Get the form data
+                        var formData = $(this).closest("form").serialize();
+
+                        // Send AJAX request to update the cart
+                        $.ajax({
+                            type: "POST",
+                            url: "update_cart.php",
+                            data: formData,
+                            success: function(response) {
+                                // Update the shopping cart icon with the new cart information
+                                $(".count").text(response.total_items);
+                                $(".shopping-cart-items").html(response.cart_items);
+                            }
+                        });
+                    });
                 });
                 </script>
                 <script src="js/jquery.js"></script>
